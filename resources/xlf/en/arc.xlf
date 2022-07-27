@@ -853,6 +853,9 @@
     <trans-unit id="arc.suspect">
       <source xml:lang="en">Suspect</source>
     </trans-unit>
+    <trans-unit id="arc.syncSecondaryToCommit">
+      <source xml:lang="en">Sync Secondary To Commit</source>
+    </trans-unit>
     <trans-unit id="arc.thePasswordsDoNotMatch">
       <source xml:lang="en">The passwords do not match. Confirm the password or press escape to exit.</source>
     </trans-unit>
@@ -1011,13 +1014,24 @@
       <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text">
-      <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
+      <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}. 
+ 
+ By clicking 'Script to notebook' or 'Deploy', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed below; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {1}, {2}, and {3}.</source>
+    </trans-unit>
+    <trans-unit id="arc.agreement.sql.help.text.azure.marketplace.terms">
+      <source xml:lang="en">Azure Marketplace Terms</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text.learn.more">
       <source xml:lang="en">Learn more</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
       <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
+    </trans-unit>
+    <trans-unit id="arc.agreement.sql.help.text.privacy.policy">
+      <source xml:lang="en">Privacy policy</source>
+    </trans-unit>
+    <trans-unit id="arc.agreement.sql.help.text.terms.of.use">
+      <source xml:lang="en">Terms of use</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.terms.conditions">
       <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
@@ -1052,9 +1066,6 @@
     <trans-unit id="arc.cores-request.label">
       <source xml:lang="en">Cores Request</source>
     </trans-unit>
-    <trans-unit id="arc.data.controller.agreement">
-      <source xml:lang="en">I accept {0} and {1}.</source>
-    </trans-unit>
     <trans-unit id="arc.data.controller.auto.upload.logs">
       <source xml:lang="en">Auto-upload Logs</source>
     </trans-unit>
@@ -1082,6 +1093,12 @@
     <trans-unit id="arc.data.controller.cluster.environment.title">
       <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.cluster.name">
+      <source xml:lang="en">Cluster Name</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.cluster.name.description">
+      <source xml:lang="en">The name of the cluster. Direct mode only.</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.connectivity.mode">
       <source xml:lang="en">Connectivity mode</source>
     </trans-unit>
@@ -1106,6 +1123,18 @@
     <trans-unit id="arc.data.controller.details.title">
       <source xml:lang="en">Data controller details</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.direct.display.name">
+      <source xml:lang="en">Direct</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.help.text">
+      <source xml:lang="en">The Kubernetes cluster must already be arc-enabled with the az connectedk8s connect command. Please use our {0} to learn more.</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.help.text.documentation.page">
+      <source xml:lang="en">documentation page</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.indirect.display.name">
+      <source xml:lang="en">Indirect</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.infrastructure">
       <source xml:lang="en">Infrastructure</source>
     </trans-unit>
@@ -1114,6 +1143,9 @@
     </trans-unit>
     <trans-unit id="arc.data.controller.location">
       <source xml:lang="en">Location</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.location.description">
+      <source xml:lang="en">Location is only used for indirect mode deployment. This field will be ignored for direct mode.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.log.analytics.primary.key">
       <source xml:lang="en">Log Analytics primary key</source>
@@ -1152,7 +1184,7 @@
       <source xml:lang="en">Data controller namespace</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.namespace.description">
-      <source xml:lang="en">Indirect mode only.</source>
+      <source xml:lang="en">Data controller namespace. Indirect mode only.</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.namespace.validation.description">
       <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
@@ -1193,8 +1225,14 @@
     <trans-unit id="arc.data.controller.summary.cluster.context">
       <source xml:lang="en">Cluster context</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.summary.cluster.name">
+      <source xml:lang="en">Cluster name</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.summary.controller">
       <source xml:lang="en">Controller</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.summary.data.controller.custom.location">
+      <source xml:lang="en">Data controller custom location</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
       <source xml:lang="en">Data controller infrastructure</source>
@@ -1400,6 +1438,9 @@
     <trans-unit id="arc.sql.cost.summary.basics">
       <source xml:lang="en">Basics</source>
     </trans-unit>
+    <trans-unit id="arc.sql.cost.summary.billable.replicas">
+      <source xml:lang="en">Billable replicas</source>
+    </trans-unit>
     <trans-unit id="arc.sql.cost.summary.business.critical">
       <source xml:lang="en">Business Critical</source>
     </trans-unit>
@@ -1502,6 +1543,12 @@
     <trans-unit id="arc.sql.pitr.retention.description">
       <source xml:lang="en">Configure retention for point-in-time backups. {0}</source>
     </trans-unit>
+    <trans-unit id="arc.sql.readable.secondaries.description">
+      <source xml:lang="en">The number of readable secondary replicas.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.readable.secondaries.label">
+      <source xml:lang="en">Readable secondary replicas</source>
+    </trans-unit>
     <trans-unit id="arc.sql.retention.days.description">
       <source xml:lang="en">Specify how long you want to keep your point-in-time backups.</source>
     </trans-unit>
@@ -1521,7 +1568,7 @@
       <source xml:lang="en">Service Tier</source>
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.backups.description">
-      <source xml:lang="en">The storage class to be used for backup persistent volumes. If no value is specified, the default storage class will be used.</source>
+      <source xml:lang="en">The storage class to be used for Backups. If no value is specified, backups will be stored in same storage class assigned to Data. Must be a RWX capable storage class.</source>
     </trans-unit>
     <trans-unit id="arc.sql.storage-class.data.description">
       <source xml:lang="en">The storage class to be used for data (.mdf). If no value is specified, the default storage class will be used.</source>
@@ -1537,6 +1584,12 @@
     </trans-unit>
     <trans-unit id="arc.sql.summary.arc.by.microsoft">
       <source xml:lang="en">by Microsoft</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.sync.secondaries.description">
+      <source xml:lang="en">The number of synchronous replicas required to commit a transaction before the primary replica is allowed to commit. Setting this value to -1 will set the number of required synchronized secondaries to '(# of replicas - 1) / 2', rounded down.</source>
+    </trans-unit>
+    <trans-unit id="arc.sql.sync.secondaries.label">
+      <source xml:lang="en">Synchronized secondaries required to commit</source>
     </trans-unit>
     <trans-unit id="arc.sql.three.replicas">
       <source xml:lang="en">3 replicas</source>
@@ -1579,6 +1632,12 @@
     </trans-unit>
     <trans-unit id="arc.storage-class.backups.label">
       <source xml:lang="en">Storage Class (Backups)</source>
+    </trans-unit>
+    <trans-unit id="arc.storage-class.backups.warning">
+      <source xml:lang="en">({0})</source>
+    </trans-unit>
+    <trans-unit id="arc.storage-class.backups.warning.link">
+      <source xml:lang="en">RWX capable</source>
     </trans-unit>
     <trans-unit id="arc.storage-class.data.label">
       <source xml:lang="en">Storage Class (Data)</source>
