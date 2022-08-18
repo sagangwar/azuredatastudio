@@ -1310,6 +1310,10 @@ declare module 'azdata' {
 			 * Warning/parallelism badges applicable to the current node
 			 */
 			badges: ExecutionPlanBadge[];
+			/**
+			 * Data to show in top operations table for the node.
+			 */
+			topOperationsData: TopOperationsDataItem[];
 		}
 
 		export interface ExecutionPlanBadge {
@@ -1460,6 +1464,11 @@ declare module 'azdata' {
 			secondComparisonResult: ExecutionGraphComparisonResult;
 		}
 
+		export interface IsExecutionPlanResult {
+			isExecutionPlan: boolean;
+			queryExecutionPlanFileExtension: string;
+		}
+
 		export interface ExecutionPlanProvider extends DataProvider {
 			// execution plan service methods
 
@@ -1474,6 +1483,26 @@ declare module 'azdata' {
 			 * @param secondPlanFile file that contains the second execution plan.
 			 */
 			compareExecutionPlanGraph(firstPlanFile: ExecutionPlanGraphInfo, secondPlanFile: ExecutionPlanGraphInfo): Thenable<ExecutionPlanComparisonResult>;
+			/**
+			 * Determines if the provided value is an execution plan and returns the appropriate file extension.
+			 * @param value String that needs to be checked.
+			 */
+			isExecutionPlan(value: string): Thenable<IsExecutionPlanResult>;
+		}
+
+		export interface TopOperationsDataItem {
+			/**
+			 * Column name for the top operation data item
+			 */
+			columnName: string;
+			/**
+			 * Cell data type for the top operation data item
+			 */
+			dataType: ExecutionPlanGraphElementPropertyDataType;
+			/**
+			 * Cell value for the top operation data item
+			 */
+			displayValue: string | number | boolean;
 		}
 	}
 
@@ -1526,9 +1555,30 @@ declare module 'azdata' {
 		link: LinkArea;
 	}
 
+	export interface TextComponentProperties {
+		/**
+		 * Corresponds to the aria-live accessibility attribute for this component
+		 */
+		ariaLive?: string;
+	}
+
+	export interface ContainerBuilder<TComponent extends Component, TLayout, TItemLayout, TPropertyBag extends ContainerProperties> extends ComponentBuilder<TComponent, TPropertyBag> {
+		/**
+		 * Sets the initial set of properties for the container being created
+		 * @param properties The properties to apply to the container
+		 */
+		withProps(properties: TPropertyBag): ContainerBuilder<TComponent, TLayout, TItemLayout, TPropertyBag>;
+	}
+
+	export interface ContainerProperties extends ComponentProperties {
+		/**
+		 * Corresponds to the aria-live accessibility attribute for this component
+		 */
+		ariaLive?: string;
+	}
 	export namespace queryeditor {
 
-		export interface IQueryMessage {
+		export interface QueryMessage {
 			/**
 			 * The message string
 			 */
@@ -1546,15 +1596,15 @@ declare module 'azdata' {
 		/**
 		 * Information about a query that was executed
 		 */
-		export interface IQueryInfo {
+		export interface QueryInfo {
 			/**
 			 * Any messages that have been received from the query provider
 			 */
-			messages: IQueryMessage[];
+			messages: QueryMessage[];
 			/**
-			 * The text of the query statement
+			 * The ranges for each batch that has executed so far
 			 */
-			queryText?: string;
+			batchRanges: vscode.Range[];
 		}
 
 		export interface QueryEventListener {
@@ -1570,7 +1620,15 @@ declare module 'azdata' {
 			 * visualize: ResultSetSummary (the result set to be visualized)
 			 * @param queryInfo The information about the query that triggered this event
 			 */
-			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: IQueryInfo): void;
+			onQueryEvent(type: QueryEventType, document: QueryDocument, args: ResultSetSummary | string | undefined, queryInfo: QueryInfo): void;
 		}
+	}
+
+	export interface NodeInfo {
+		/**
+		 * The object type of the node. Node type is used to determine the icon, the object type is the actual type of the node, e.g. for Tables node
+		 * under the database, the nodeType is Folder, the objectType is be Tables.
+		 */
+		objectType?: string;
 	}
 }

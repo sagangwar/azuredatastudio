@@ -23,14 +23,14 @@ import {
 	IModelViewWizardDetails, IModelViewWizardPageDetails, IExecuteManagerDetails, INotebookSessionDetails,
 	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, INotebookEditOperation,
 	NotebookChangeKind,
-	ISerializationManagerDetails,
-	IExtHostQueryEvent
+	ISerializationManagerDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { TreeDataTransferDTO } from 'vs/workbench/api/common/shared/treeDataTransfer';
 import { ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
+import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 
 export abstract class ExtHostAzureBlobShape {
 	public $createSas(connectionUri: string, blobContainerUri: string, blobStorageKey: string, storageAccountName: string, expirationDate: string): Thenable<mssql.CreateSasResponse> { throw ni(); }
@@ -585,6 +585,10 @@ export abstract class ExtHostDataProtocolShape {
 	 * Compares two execution plans and identifies matching sections in both.
 	 */
 	$compareExecutionPlanGraph(handle: number, firstPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo, secondPlanFile: azdata.executionPlan.ExecutionPlanGraphInfo): Thenable<azdata.executionPlan.ExecutionPlanComparisonResult> { throw ni(); }
+	/**
+	 * Determines if the provided value is an execution plan and returns the appropriate file extension.
+	 */
+	$isExecutionPlan(handle: number, value: string): Thenable<azdata.executionPlan.IsExecutionPlanResult> { throw ni(); }
 }
 
 /**
@@ -921,7 +925,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDirty(handle: number, isDirty: boolean): void;
 }
 export interface ExtHostQueryEditorShape {
-	$onQueryEvent(providerId: string, handle: number, fileUri: string, event: IExtHostQueryEvent): void;
+	$onQueryEvent(providerId: string, handle: number, fileUri: string, event: IQueryEvent): void;
 }
 
 export interface MainThreadQueryEditorShape extends IDisposable {
