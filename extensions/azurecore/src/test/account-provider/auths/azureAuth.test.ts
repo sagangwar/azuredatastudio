@@ -74,7 +74,7 @@ describe('Azure Authentication', function () {
 			]);
 		});
 
-		const response = await azureAuthCodeGrant.object.hydrateAccount(mockToken.token, mockClaims);
+		const response = await azureAuthCodeGrant.object.hydrateAccount(mockToken, mockClaims);
 		should(response.displayInfo.displayName).be.equal(`${mockClaims.name} - ${mockClaims.email}`, 'Account name should match');
 		should(response.displayInfo.userId).be.equal(mockClaims.sub, 'Account ID should match');
 		should(response.properties.tenants).be.deepEqual([mockTenant], 'Tenants should match');
@@ -83,15 +83,16 @@ describe('Azure Authentication', function () {
 	describe('getAccountSecurityToken', function () {
 		it('should be undefined on stale account', async function () {
 			mockAccount.isStale = true;
-			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, TypeMoq.It.isAny(), TypeMoq.It.isAny());
+			const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, TypeMoq.It.isAny());
 			should(securityToken).be.undefined();
 		});
 		it('dont find correct resources', async function () {
-			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, TypeMoq.It.isAny(), -1);
+			const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, -1);
 			should(securityToken).be.undefined();
 		});
 		it('incorrect tenant', async function () {
-			await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, 'invalid_tenant', AzureResource.MicrosoftResourceManagement).should.be.rejected();
+			//await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, 'invalid_tenant', AzureResource.MicrosoftResourceManagement).should.be.rejected();
+			await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.MicrosoftResourceManagement).should.be.rejected();
 		});
 
 		it('token recieved for ossRdbmns resource', async function () {
@@ -106,24 +107,16 @@ describe('Azure Authentication', function () {
 				} as OAuthTokenResponse);
 			});
 
-			azureAuthCodeGrant.setup(x => x.refreshToken(mockTenant, provider.settings.ossRdbmsResource, mockRefreshToken)).returns((): Promise<OAuthTokenResponse> => {
+			azureAuthCodeGrant.setup(x => x.getToken(mockAccount.key.accountId, AzureResource.OssRdbms,)).returns((): Promise<AuthenticationResult> => {
 				const mockToken: AccessToken = JSON.parse(JSON.stringify(mockAccessToken));
 				delete (mockToken as any).invalidData;
 				return Promise.resolve({
-					accessToken: mockToken
-				} as OAuthTokenResponse);
+					accessToken: mockToken.token
+				} as AuthenticationResult);
 			});
 
-			azureAuthCodeGrant.setup(x => x.getSavedToken(mockTenant, provider.settings.ossRdbmsResource, mockAccount.key)).returns((): Promise<{ accessToken: AccessToken, refreshToken: RefreshToken, expiresOn: string }> => {
-				return Promise.resolve({
-					accessToken: mockAccessToken,
-					refreshToken: mockRefreshToken,
-					expiresOn: `${(new Date().getTime() / 1000) + (10 * 60)}`
-				});
-			});
-
-			const securityToken = await azureAuthCodeGrant.object.getAccountSecurityToken(mockAccount, mockTenant.id, AzureResource.OssRdbms);
-			should(securityToken.token).be.equal(mockAccessToken.token, 'Token are not similar');
+			const securityToken = await azureAuthCodeGrant.object.getToken(mockAccount.key.accountId, AzureResource.OssRdbms);
+			should(securityToken).be.equal(mockAccessToken.token, 'Token are not similar');
 
 		});
 
