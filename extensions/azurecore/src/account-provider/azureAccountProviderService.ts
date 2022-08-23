@@ -34,7 +34,6 @@ export class AzureAccountProviderService implements vscode.Disposable {
 	private _disposables: vscode.Disposable[] = [];
 	private _accountDisposals: { [accountProviderId: string]: vscode.Disposable };
 	private _accountProviders: { [accountProviderId: string]: azdata.AccountProvider };
-	private _credentialProvider: azdata.CredentialProvider;
 	private _configChangePromiseChain: Thenable<void>;
 	private _currentConfig: vscode.WorkspaceConfiguration;
 	private _event: events.EventEmitter;
@@ -68,9 +67,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 		// 2b) Register the configuration change handler
 		// 2c) Perform an initial config change handling
 		return azdata.credentials.getProvider(AzureAccountProviderService.CredentialNamespace)
-			.then(credProvider => {
-				this._credentialProvider = credProvider;
-
+			.then(() => {
 				this._context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(() => {
 					this._configChangePromiseChain = this.onDidChangeConfiguration();
 				}, this));

@@ -94,8 +94,8 @@ export class AzureAuthCodeGrant extends AzureAuth {
 		const authCode = await this.handleWebResponse(state);
 
 		return {
-			authCode,
-			codeVerifier: this.pkceCodes.verifier,
+			scopes: [authCode],
+			code: this.pkceCodes.verifier,
 			redirectUri: this.redirectUri
 		};
 	}

@@ -171,7 +171,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (!resource) {
 			console.log('Error: Could not fetch the azure resource.');
 		}
-		const accounts = await cache.getAllAccounts();
 		const account = await cache.getAccountByHomeId(accountId);
 		if (!account) {
 			console.log('Error: Could not fetch account when acquiring token');
@@ -204,8 +203,8 @@ export abstract class AzureAuth implements vscode.Disposable {
 		// return authResponse.accessToken
 	}
 
-	public async getTokenInteractive(authCodeRequest: AuthorizationCodeRequest): AuthenticationResult {
-
+	public async getTokenInteractive(authCodeRequest: AuthorizationCodeRequest): Promise<AuthenticationResult> {
+		return undefined;
 	}
 
 	public async getTokenHelper(tenant: Tenant, resource: Resource, accessTokenString: string, refreshTokenString: string, expiresOnString: string): Promise<OAuthTokenResponse> {
@@ -249,11 +248,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 			refreshToken,
 			tokenClaims,
 			expiresOn: expiresOnString
-		};
-
-		const accountKey: azdata.AccountKey = {
-			providerId: this.metadata.id,
-			accountId: userKey
 		};
 
 		return result;
