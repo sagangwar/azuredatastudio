@@ -2,10 +2,12 @@
 	"extends": "../tsconfig.base.json",
 	"compileOnSave": true,
 	"compilerOptions": {
+		"jsx": "react",
 		"outDir": "./out",
 		"lib": [
 			"es6",
-			"es2015.promise"
+			"es2015.promise",
+			"dom"
 		],
 		"sourceMap": true,
 		"emitDecoratorMetadata": true,
@@ -20,6 +22,11 @@
 		"strictNullChecks": false
 	},
 	"exclude": [
-		"node_modules"
+		"node_modules",
+		"src/webviews"
+	],
+	"include": [
+		"./**/*.tsx",
+		"./**/*.ts"
 	]
 }

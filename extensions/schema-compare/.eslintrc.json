@@ -4,6 +4,16 @@
 	},
 	"rules": {
 		// Disabled until the issues can be fixed
-		"@typescript-eslint/explicit-function-return-type": ["off"]
+		"@typescript-eslint/explicit-function-return-type": ["off"]//,
+		// "import/extensions": [
+		// 	"error",
+		// 	"ignorePackages",
+		// 	{
+		// 		"js": "never",
+		// 		"jsx": "never",
+		// 		"ts": "never",
+		// 		"tsx": "never"
+		// 	}
+		// ]
 	}
 }

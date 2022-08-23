@@ -18,7 +18,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	});
 
 	vscode.commands.registerCommand('schemaCompare.startWeb', async (sourceContext: any, targetContext: any = undefined, comparisonResult: any = undefined) => {
-		SchemaComparePanel.render(extensionContext.extensionUri);
+		await SchemaComparePanel.render(extensionContext.extensionUri);
 	});
 }
 
