@@ -10,7 +10,7 @@ import { AzureAuthCodeGrant } from '../../../account-provider/auths/azureAuthCod
 import { Token, TokenClaims, AccessToken, RefreshToken, OAuthTokenResponse } from '../../../account-provider/auths/azureAuth';
 import { Tenant, AzureAccount } from 'azurecore';
 import providerSettings from '../../../account-provider/providerSettings';
-import { AzureResource } from 'azdata';
+import { AccountKey, AzureResource } from 'azdata';
 import { AxiosResponse } from 'axios';
 import { AuthenticationResult } from '@azure/msal-node';
 
@@ -41,6 +41,8 @@ const mockTenant: Tenant = {
 
 let mockAccount: AzureAccount;
 
+let mockKey: AccountKey;
+
 const provider = providerSettings[0].metadata;
 
 describe('Azure Authentication', function () {
@@ -50,9 +52,14 @@ describe('Azure Authentication', function () {
 
 		azureAuthCodeGrant.callBase = true;
 		// authDeviceCode.callBase = true;
+		mockKey = {
+			accountId: "TestAccount",
+			providerId: "TestProvider"
+		};
 
 		mockAccount = {
 			isStale: false,
+			key: mockKey,
 			properties: {
 				tenants: [mockTenant]
 			}
