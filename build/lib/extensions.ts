@@ -264,6 +264,7 @@ const externalExtensions = [
 	'machine-learning',
 	'profiler',
 	'query-history',
+	'react-test',
 	'schema-compare',
 	'server-report',
 	'sql-assessment',
