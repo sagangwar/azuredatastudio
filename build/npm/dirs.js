@@ -42,6 +42,7 @@ exports.dirs = [
 	'extensions/profiler',
 	'extensions/python',
 	'extensions/query-history',
+	'extensions/react-test',
 	'extensions/resource-deployment',
 	'extensions/schema-compare',
 	'extensions/search-result',
