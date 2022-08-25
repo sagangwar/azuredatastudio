@@ -1770,6 +1770,11 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.51.tgz#cfd70924a25a3fd32b218e5e420e6897e1ac4f40"
   integrity sha512-CuPgU6f3eT/XgKKPqKd/gLZV1Xmvf1a2R5POBOGQa6uv82xpls89HU5zKeVoyR8XzHd1RGNOlQlvUe3CFkjWNQ==
 
+"@types/git-url-parse@^9.0.1":
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/@types/git-url-parse/-/git-url-parse-9.0.1.tgz#1c7cc89527ca8b5afcf260ead3b0e4e373c43938"
+  integrity sha512-Zf9mY4Mz7N3Nyi341nUkOtgVUQn4j6NS4ndqEha/lOgEbTkHzpD7wZuRagYKzrXNtvawWfsrojoC1nhsQexvNA==
+
 "@types/http-cache-semantics@*":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@types/http-cache-semantics/-/http-cache-semantics-4.0.1.tgz#0ea7b61496902b95890dc4c3a116b60cb8dae812"
