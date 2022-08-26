@@ -201,6 +201,8 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 			name = details.name;
 		} catch (e) {
 			console.error('Error getting GitHub repository details', e);
+			owner = 'Microsoft';
+			name = 'azuredatastudio';
 		}
 
 		const gitRepo = owner && name ? `${owner}/${name}` : '';
