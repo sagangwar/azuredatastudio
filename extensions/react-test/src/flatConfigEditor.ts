@@ -128,8 +128,7 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 			throw new Error('No workspace open');
 		}
 
-		const flatFileUri = vscode.Uri.joinPath(workspaceRootUri, '.github/workflows', 'flat.yml'
-		);
+		const flatFileUri = vscode.Uri.joinPath(workspaceRootUri, '.github/workflows', 'flat.yml');
 		const document = await vscode.workspace.openTextDocument(flatFileUri);
 		const rawFlatYaml = document.getText();
 
@@ -137,25 +136,8 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 			workspaceRootUri.path.lastIndexOf('/') + 1
 		);
 
-		let name, owner = '';
-
-		try {
-			const details = await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, },
-				async progress => {
-					progress.report({
-						message: `Checking for GitHub repository in directory: ${dirName}`,
-					});
-
-					return await this.getRepoDetails();
-				}
-			);
-			owner = details.owner || '';
-			name = details.name;
-		} catch (e) {
-			console.error('Error getting GitHub repository details', e);
-			owner = 'Microsoft';
-			name = 'azuredatastudio';
-		}
+		const owner = 'Microsoft';
+		const name = 'azuredatastudio';
 
 		const gitRepo = owner && name ? `${owner}/${name}` : '';
 
@@ -313,21 +295,6 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 			contents: rawText,
 		});
 	};
-
-	private async getRepoDetails(): Promise<{ name?: string; owner?: string }> {
-		try {
-			const gitClient = new VSCodeGit();
-			await gitClient.activateExtension();
-			await gitClient.waitForRepo(3);
-
-			// Next, let's grab the repo name.
-			const { name, owner } = gitClient.repoDetails;
-
-			return { name, owner };
-		} catch (e) {
-			throw new Error('Couldnt activate git');
-		}
-	}
 
 	private loadUrlContents = async (
 		webviewPanel: vscode.WebviewPanel,
