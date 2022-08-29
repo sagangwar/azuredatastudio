@@ -14,114 +14,82 @@ export async function activate(context: vscode.ExtensionContext) {
 	const editor = FlatConfigEditor.register(context);
 	context.subscriptions.push(editor);
 
-	const showEditor =
-		({ isPreview = false, onSide = false }) =>
-			() => {
-				const workspaceRootUri = vscode.workspace.workspaceFolders?.[0].uri;
+	context.subscriptions.push(vscode.commands.registerCommand('flat.showPreview', () => showEditor({ isPreview: true, onSide: false })));
+	context.subscriptions.push(vscode.commands.registerCommand('flat.showRaw', () => showEditor({ isPreview: false, onSide: false })));
+	context.subscriptions.push(vscode.commands.registerCommand('flat.showPreviewToSide', () => showEditor({ isPreview: true, onSide: true })));
+	context.subscriptions.push(vscode.commands.registerCommand('flat.showRawToSide', () => showEditor({ isPreview: false, onSide: true })));
+	context.subscriptions.push(vscode.commands.registerCommand('flat.initializeFlatYml', async () => await initializeFlatYml()));
+	context.subscriptions.push(vscode.commands.registerCommand('reactTest.go', () => showEditor({ isPreview: true })));
+}
 
-				if (!workspaceRootUri) {
-					return;
-				}
+async function initializeFlatYml(): Promise<void> {
+	const folders = vscode.workspace.workspaceFolders;
 
-				const flatFileUri = vscode.Uri.joinPath(
-					workspaceRootUri,
-					'.github/workflows',
-					'flat.yml'
-				);
+	if (!folders) {
+		return;
+	}
+	const rootPath: vscode.WorkspaceFolder = folders[0];
 
-				vscode.commands.executeCommand(
-					'vscode.openWith',
-					flatFileUri,
-					isPreview ? 'flat.config' : 'default',
-					onSide ? { viewColumn: vscode.ViewColumn.Beside, preview: false } : {}
-				);
-			};
+	const workflowsDir = path.join(rootPath.uri.fsPath, '.github/workflows');
+	const flatYmlPath = path.join(workflowsDir, 'flat.yml');
 
-	context.subscriptions.push(
-		vscode.commands.registerCommand(
-			'flat.showPreview',
-			showEditor({ isPreview: true, onSide: false })
-		)
-	);
+	if (fs.existsSync(flatYmlPath)) {
+		showEditor({ isPreview: true });
+		return;
+	}
 
-	context.subscriptions.push(
-		vscode.commands.registerCommand(
-			'flat.showRaw',
-			showEditor({ isPreview: false, onSide: false })
-		)
-	);
+	fs.mkdirSync(workflowsDir, { recursive: true });
 
-	context.subscriptions.push(
-		vscode.commands.registerCommand(
-			'flat.showPreviewToSide',
-			showEditor({ isPreview: true, onSide: true })
-		)
-	);
-
-	context.subscriptions.push(
-		vscode.commands.registerCommand(
-			'flat.showRawToSide',
-			showEditor({ isPreview: false, onSide: true })
-		)
-	);
-
-	context.subscriptions.push(
-		vscode.commands.registerCommand('flat.initializeFlatYml', async () => {
-			const folders = vscode.workspace.workspaceFolders;
-
-			if (!folders) {
-				return;
-			}
-			const rootPath: vscode.WorkspaceFolder = folders[0];
-
-			const workflowsDir = path.join(rootPath.uri.fsPath, '.github/workflows');
-			const flatYmlPath = path.join(workflowsDir, 'flat.yml');
-
-			if (fs.existsSync(flatYmlPath)) {
-				showEditor({ isPreview: true })();
-				return;
-			}
-
-			fs.mkdirSync(workflowsDir, { recursive: true });
-
-			const flatStub = {
-				name: 'data',
-				on: {
-					schedule: [{ cron: '0 0 * * *' }],
-					workflow_dispatch: {},
-					push: {
-						paths: ['.github/workflows/flat.yml'],
+	const flatStub = {
+		name: 'data',
+		on: {
+			schedule: [{ cron: '0 0 * * *' }],
+			workflow_dispatch: {},
+			push: {
+				paths: ['.github/workflows/flat.yml'],
+			},
+		},
+		jobs: {
+			scheduled: {
+				'runs-on': 'ubuntu-latest',
+				steps: [
+					{
+						name: 'Setup deno',
+						uses: 'denoland/setup-deno@main',
+						with: {
+							'deno-version': 'v1.10.x',
+						},
 					},
-				},
-				jobs: {
-					scheduled: {
-						'runs-on': 'ubuntu-latest',
-						steps: [
-							{
-								name: 'Setup deno',
-								uses: 'denoland/setup-deno@main',
-								with: {
-									'deno-version': 'v1.10.x',
-								},
-							},
-							{
-								name: 'Check out repo',
-								uses: 'actions/checkout@v2',
-							},
-						],
+					{
+						name: 'Check out repo',
+						uses: 'actions/checkout@v2',
 					},
-				},
-			};
+				],
+			},
+		},
+	};
 
-			fs.writeFileSync(path.join(workflowsDir, 'flat.yml'), stringify(flatStub));
-			showEditor({ isPreview: true })();
-		})
+	fs.writeFileSync(path.join(workflowsDir, 'flat.yml'), stringify(flatStub));
+	showEditor({ isPreview: true });
+}
+
+function showEditor({ isPreview = false, onSide = false }: { isPreview?: boolean, onSide?: boolean }) {
+	const workspaceRootUri = vscode.workspace.workspaceFolders?.[0].uri;
+
+	if (!workspaceRootUri) {
+		return;
+	}
+
+	const flatFileUri = vscode.Uri.joinPath(
+		workspaceRootUri,
+		'.github/workflows',
+		'flat.yml'
 	);
 
-	context.subscriptions.push(
-		vscode.commands.registerCommand(
-			'reactTest.go',
-			showEditor({ isPreview: true })
-		)
+	vscode.commands.executeCommand(
+		'vscode.openWith',
+		flatFileUri,
+		isPreview ? 'flat.config' : 'default',
+		onSide ? { viewColumn: vscode.ViewColumn.Beside, preview: false } : {}
 	);
 }
