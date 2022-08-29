@@ -160,7 +160,6 @@
     "react-dom": "^17.0.1",
     "react-error-boundary": "^3.1.4",
     "ts-debounce": "^3.0.0",
-    "tweetsodium": "^0.0.6",
     "yaml": "^2.0.0-4",
     "yup": "^0.32.9",
     "zod": "^3.0.0-alpha.33",

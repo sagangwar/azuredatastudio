@@ -14,8 +14,6 @@ import { VSCodeGit } from './git';
 import { getNonce, getSession } from './lib';
 import type { FlatState } from './types';
 
-import * as sodium from 'tweetsodium';
-
 export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 	public static register(context: vscode.ExtensionContext): vscode.Disposable {
 		const provider = new FlatConfigEditor(context);
@@ -107,7 +105,7 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 					this.updateTextDocument(document, e.data);
 					break;
 				case 'storeSecret':
-					this.storeSecret(webviewPanel, e.data);
+					console.log('storing secret');
 					break;
 				case 'refreshFiles':
 					this.loadFiles(webviewPanel);
@@ -304,73 +302,6 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 		// })
 		const serialized = stringify(data);
 		return serialized;
-	}
-
-	private async storeSecret(
-		webviewPanel: vscode.WebviewPanel,
-		data: SecretData
-	) {
-		const { fieldName, value } = data;
-
-		const session = await getSession({
-			createIfNone: true,
-		});
-
-		// if (!session) {
-		//   session = await getSession({
-		//     createIfNone: true,
-		//   })
-		// }
-
-		if (!session) {
-			return;
-		}
-		const { owner, name } = await this.getRepoDetails();
-		if (!owner || !name) {
-			return;
-		}
-
-		const octokit = new Octokit({
-			auth: session.accessToken,
-		});
-		// Go time! Let's create a secret for the encrypted conn string.
-		const keyRes = await octokit.actions.getRepoPublicKey({
-			owner,
-			repo: name,
-		});
-		const key = keyRes.data.key;
-		// Convert the message and key to Uint8Array's (Buffer implements that interface)
-		const messageBytes = Buffer.from(value);
-		const keyBytes = Buffer.from(key, 'base64');
-		// Encrypt using LibSodium.
-		const encryptedBytes = sodium.seal(messageBytes, keyBytes);
-		// Base64 the encrypted secret
-		const encrypted = Buffer.from(encryptedBytes).toString('base64');
-		const keyId = keyRes.data.key_id;
-		try {
-			await octokit.actions.createOrUpdateRepoSecret({
-				owner: owner,
-				repo: name,
-				secret_name: fieldName,
-				encrypted_value: encrypted,
-				key_id: keyId,
-			});
-
-			await webviewPanel.webview.postMessage({
-				command: 'storeSecretResponse',
-				fieldName,
-				status: 'success',
-			});
-		} catch (e) {
-			await vscode.window.showErrorMessage(
-				'Oh no! We weren\'t able to create a secret for your connection string.'
-			);
-			await webviewPanel.webview.postMessage({
-				command: 'storeSecretResponse',
-				fieldName,
-				status: 'error',
-			});
-		}
 	}
 
 	public showEditor = ({
