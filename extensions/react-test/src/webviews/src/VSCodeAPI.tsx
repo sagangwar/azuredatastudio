@@ -19,7 +19,7 @@ class VSCodeWrapper {
 	 * Send message to the extension framework.
 	 * @param message
 	 */
-	public postMessage(message: any): void {
+	public postMessage(message: {command: string, data?: any}): void {
 		this.vscodeApi.postMessage(message)
 	}
 

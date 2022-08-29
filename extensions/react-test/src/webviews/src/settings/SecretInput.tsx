@@ -35,7 +35,7 @@ const SecretInput: FunctionComponent<SecretInputProps> = props => {
 
 	const handleSave = async () => {
 		VSCodeAPI.postMessage({
-			type: 'storeSecret',
+			command: 'storeSecret',
 			data: { fieldName: innerFieldName, value: localValue },
 		})
 	}

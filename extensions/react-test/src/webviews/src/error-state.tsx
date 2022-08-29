@@ -9,7 +9,7 @@ export function ErrorState() {
 	const handleRetry = () => {
 		setIsRefreshing(true)
 		VSCodeAPI.postMessage({
-			type: 'refreshGitDetails',
+			command: 'refreshGitDetails'
 		})
 	}
 

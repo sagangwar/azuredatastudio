@@ -48,33 +48,33 @@ function App({ }: AppProps) {
 			// @ts-ignore
 			cloned.on.push.paths = uniq([
 				'.github/workflows/flat.yml',
-				...flatten(
-					state.jobs.scheduled.steps.map(step => {
-						let files = []
-						if (!(step as FlatStep).with) return []
-						if ((step as FlatStep).with.postprocess !== undefined) {
-							files.push((step as FlatStep).with.postprocess)
-						}
-						if (((step as FlatStep).with as PullSqlConfig).sql_queryfile) {
-							files.push(
-								((step as FlatStep).with as PullSqlConfig).sql_queryfile
-							)
-						}
-						return files
-					})
-				),
+				// ...flatten(
+				// 	state.jobs.scheduled.steps.map(step => {
+				// 		let files = []
+				// 		if (!(step as FlatStep).with) return []
+				// 		if ((step as FlatStep).with.postprocess !== undefined) {
+				// 			files.push((step as FlatStep).with.postprocess)
+				// 		}
+				// 		if (((step as FlatStep).with as PullSqlConfig).sql_queryfile) {
+				// 			files.push(
+				// 				((step as FlatStep).with as PullSqlConfig).sql_queryfile
+				// 			)
+				// 		}
+				// 		return files
+				// 	})
+				// ),
 			])
 		}
 
 		VSCodeAPI.postMessage({
-			type: 'updateText',
+			command: 'updateText',
 			data: cloned,
 		})
 	}, [state])
 
 	const handleOpenRaw = () => {
 		VSCodeAPI.postMessage({
-			type: 'openEditor',
+			command: 'openEditor',
 			data: { isPreview: false, onSide: false },
 		})
 	}
@@ -82,7 +82,7 @@ function App({ }: AppProps) {
 	const actionsUrl = gitRepo && `https://github.com/${gitRepo}/actions`
 
 	return (
-		<div className="p-8 space-y-6">
+		<div className="p-16 space-y-6">
 			<header>
 				<div className="mb-2">
 					<h1 className="text-[26px] leading-[30px] font-medium my-0">

@@ -62,13 +62,9 @@ useFlatConfigStore.setState({
 	isStubData: true,
 })
 
-VSCodeAPI.postMessage({
-	type: 'refreshFiles',
-})
+VSCodeAPI.postMessage({ command: 'refreshFiles' });
 
-VSCodeAPI.postMessage({
-	type: 'refreshState',
-})
+VSCodeAPI.postMessage({ command: 'refreshState' });
 
 window.addEventListener('message', e => {
 	// @ts-ignore

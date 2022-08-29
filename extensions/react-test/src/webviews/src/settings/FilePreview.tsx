@@ -14,7 +14,7 @@ export const FilePreview: FunctionComponent<FilePreviewProps> = props => {
 		setFileContent(undefined)
 		fileRef.current = file
 		VSCodeAPI.postMessage({
-			type: 'getFileContents',
+			command: 'getFileContents',
 			data: file,
 		})
 	}, [file])

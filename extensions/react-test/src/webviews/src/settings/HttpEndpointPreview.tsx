@@ -13,7 +13,7 @@ export const HttpEndpointPreview: FunctionComponent<HttpEndpointPreviewProps> = 
 
 	const fetchData = async () => {
 		VSCodeAPI.postMessage({
-			type: 'getUrlContents',
+			command: 'getUrlContents',
 			data: urlRef.current,
 		})
 	}
