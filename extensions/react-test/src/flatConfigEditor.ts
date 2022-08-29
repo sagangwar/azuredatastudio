@@ -35,35 +35,11 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 		webviewPanel: vscode.WebviewPanel,
 		_token: vscode.CancellationToken
 	): Promise<void> {
-		const updateWebview = async (document: vscode.TextDocument) => {
-			if (vscode.window.activeTextEditor) {
-				webviewPanel.webview.html = await this.getHtmlForWebview(
-					webviewPanel.webview
-				);
-			} else {
-				const rawFlatYaml = document.getText();
-				const parsedConfig = parse(rawFlatYaml);
-
-				webviewPanel.webview.postMessage({
-					command: 'updateState',
-					config: parsedConfig,
-				});
-			}
-		};
-
-		const updateWebviewState = async () => {
-			const rawFlatYaml = document.getText();
-			const parsedConfig = parse(rawFlatYaml);
-			webviewPanel.webview.postMessage({
-				command: 'updateState',
-				config: parsedConfig,
-			});
-		};
 
 		const changeDocumentSubscription = vscode.workspace.onDidSaveTextDocument(
 			e => {
 				if (e.uri.toString() === document.uri.toString()) {
-					updateWebview(e);
+					this.updateWebview(webviewPanel.webview, e);
 				}
 			}
 		);
@@ -79,17 +55,10 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 		};
 
 		try {
-			webviewPanel.webview.html = await this.getHtmlForWebview(
-				webviewPanel.webview
-			);
+			webviewPanel.webview.html = await this.getHtmlForWebview(webviewPanel.webview);
 		} catch (e) {
-			await vscode.window.showErrorMessage(
-				'Please make sure you\'re in a repository with a valid upstream GitHub remote'
-			);
-
-			await vscode.commands.executeCommand(
-				'workbench.action.revertAndCloseActiveEditor'
-			);
+			await vscode.window.showErrorMessage('Please make sure you\'re in a repository with a valid upstream GitHub remote');
+			await vscode.commands.executeCommand('workbench.action.revertAndCloseActiveEditor');
 
 			// For whatever reason, this doesn't close the webview.
 			await webviewPanel.dispose();
@@ -114,7 +83,7 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 					this.loadFileContents(webviewPanel, e.data);
 					break;
 				case 'refreshState':
-					updateWebviewState();
+					this.updateWebviewState(webviewPanel.webview, document);
 					break;
 				case 'getUrlContents':
 					this.loadUrlContents(webviewPanel, e.data);
@@ -145,19 +114,11 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 	 */
 	private async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
 		// Local path to script and css for the webview
-		const scriptUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this.context.extensionUri, 'out/webviews/index.js')
-		);
+		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'out/webviews/index.js'));
 
-		const styleVSCodeUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this.context.extensionUri, 'out/webviews/index.css')
-		);
+		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'out/webviews/index.css'));
 		const codiconsUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(
-				this.context.extensionUri,
-				'out/webviews/public/codicon.css'
-			)
-		);
+			vscode.Uri.joinPath(this.context.extensionUri, 'out/webviews/public/codicon.css'));
 
 		// Use a nonce to whitelist which scripts can be run
 		const nonce = getNonce();
@@ -167,10 +128,7 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 			throw new Error('No workspace open');
 		}
 
-		const flatFileUri = vscode.Uri.joinPath(
-			workspaceRootUri,
-			'.github/workflows',
-			'flat.yml'
+		const flatFileUri = vscode.Uri.joinPath(workspaceRootUri, '.github/workflows', 'flat.yml'
 		);
 		const document = await vscode.workspace.openTextDocument(flatFileUri);
 		const rawFlatYaml = document.getText();
@@ -179,14 +137,10 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 			workspaceRootUri.path.lastIndexOf('/') + 1
 		);
 
-		let name,
-			owner = '';
+		let name, owner = '';
 
 		try {
-			const details = await vscode.window.withProgress(
-				{
-					location: vscode.ProgressLocation.Notification,
-				},
+			const details = await vscode.window.withProgress({ location: vscode.ProgressLocation.Notification, },
 				async progress => {
 					progress.report({
 						message: `Checking for GitHub repository in directory: ${dirName}`,
@@ -239,7 +193,9 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 		document.save();
 	}
 
-	debouncedSave = debounce(this.saveDocument, 300);
+	private debouncedSave(document: vscode.TextDocument) {
+		debounce(() => this.saveDocument(document), 300);
+	}
 
 	/**
 	 * Write out the yaml to a given document.
@@ -250,11 +206,7 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 			throw new Error('No workspace open');
 		}
 
-		const flatFileUri = vscode.Uri.joinPath(
-			workspaceRootUri,
-			'.github/workflows',
-			'flat.yml'
-		);
+		const flatFileUri = vscode.Uri.joinPath(workspaceRootUri, '.github/workflows', 'flat.yml');
 		const document = await vscode.workspace.openTextDocument(flatFileUri);
 		const currentText = document.getText();
 
@@ -262,16 +214,14 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 		const edit = new vscode.WorkspaceEdit();
 
 		const newText = this.serializeWorkflow(data);
+
 		if (currentText === newText) {
 			return;
 		}
 
 		// Replaces the entire document every time
 		// TODO, maybe: more specific edits
-		edit.replace(
-			document.uri,
-			new vscode.Range(0, 0, document.lineCount, 0),
-			newText
+		edit.replace(document.uri, new vscode.Range(0, 0, document.lineCount, 0), newText
 		);
 		await vscode.workspace.applyEdit(edit);
 		this.debouncedSave(document);
@@ -304,20 +254,13 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 		return serialized;
 	}
 
-	public showEditor = ({
-		isPreview = false,
-		onSide = false,
-	}: ShowEditorOptions): void => {
+	public showEditor = ({ isPreview = false, onSide = false }: ShowEditorOptions): void => {
 		const workspaceRootUri = vscode.workspace.workspaceFolders?.[0].uri;
 		if (!workspaceRootUri) {
 			return;
 		}
 
-		const flatFileUri = vscode.Uri.joinPath(
-			workspaceRootUri,
-			'.github/workflows',
-			'flat.yml'
-		);
+		const flatFileUri = vscode.Uri.joinPath(workspaceRootUri, '.github/workflows', 'flat.yml');
 
 		vscode.commands.executeCommand(
 			'vscode.openWith',
@@ -343,9 +286,7 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 			],
 			{ dot: true }
 		);
-		const parsedFiles = files.map(
-			file => `.${file.split(workspaceRootUri.path)[1]}`
-		);
+		const parsedFiles = files.map(file => `.${file.split(workspaceRootUri.path)[1]}`);
 
 		await webviewPanel.webview.postMessage({
 			command: 'updateFiles',
@@ -406,6 +347,31 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 			contents: contents,
 		});
 	};
+
+	private async updateWebview(webview: vscode.Webview, document: vscode.TextDocument): Promise<void> {
+		if (vscode.window.activeTextEditor) {
+			webview.html = await this.getHtmlForWebview(
+				webview
+			);
+		} else {
+			const rawFlatYaml = document.getText();
+			const parsedConfig = parse(rawFlatYaml);
+
+			webview.postMessage({
+				command: 'updateState',
+				config: parsedConfig,
+			});
+		}
+	}
+
+	private async updateWebviewState(webview: vscode.Webview, document: vscode.TextDocument) {
+		const rawFlatYaml = document.getText();
+		const parsedConfig = parse(rawFlatYaml);
+		webview.postMessage({
+			command: 'updateState',
+			config: parsedConfig,
+		});
+	}
 }
 
 interface ShowEditorOptions {
