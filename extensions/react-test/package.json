@@ -51,6 +51,12 @@
         "icon": "$(go-to-file)"
       },
       {
+        "command": "reactTest.launch",
+        "title": "Launch React Test",
+        "category": "React Test",
+        "icon": "$(go-to-file)"
+      },
+      {
         "command": "flat.showPreview",
         "title": "Show Editor",
         "category": "Flat Editor",

@@ -9,17 +9,19 @@ import * as fs from 'fs';
 import { stringify } from 'yaml';
 
 import { FlatConfigEditor } from './flatConfigEditor';
+import { UiProviderPanel } from './uiProviderPanel';
 
-export async function activate(context: vscode.ExtensionContext) {
-	const editor = FlatConfigEditor.register(context);
-	context.subscriptions.push(editor);
+export async function activate(extension: vscode.ExtensionContext) {
+	const editor = FlatConfigEditor.register(extension);
+	extension.subscriptions.push(editor);
 
-	context.subscriptions.push(vscode.commands.registerCommand('flat.showPreview', () => showEditor({ isPreview: true, onSide: false })));
-	context.subscriptions.push(vscode.commands.registerCommand('flat.showRaw', () => showEditor({ isPreview: false, onSide: false })));
-	context.subscriptions.push(vscode.commands.registerCommand('flat.showPreviewToSide', () => showEditor({ isPreview: true, onSide: true })));
-	context.subscriptions.push(vscode.commands.registerCommand('flat.showRawToSide', () => showEditor({ isPreview: false, onSide: true })));
-	context.subscriptions.push(vscode.commands.registerCommand('flat.initializeFlatYml', async () => await initializeFlatYml()));
-	context.subscriptions.push(vscode.commands.registerCommand('reactTest.go', () => showEditor({ isPreview: true })));
+	extension.subscriptions.push(vscode.commands.registerCommand('flat.showPreview', () => showEditor({ isPreview: true, onSide: false })));
+	extension.subscriptions.push(vscode.commands.registerCommand('flat.showRaw', () => showEditor({ isPreview: false, onSide: false })));
+	extension.subscriptions.push(vscode.commands.registerCommand('flat.showPreviewToSide', () => showEditor({ isPreview: true, onSide: true })));
+	extension.subscriptions.push(vscode.commands.registerCommand('flat.showRawToSide', () => showEditor({ isPreview: false, onSide: true })));
+	extension.subscriptions.push(vscode.commands.registerCommand('flat.initializeFlatYml', async () => await initializeFlatYml()));
+	extension.subscriptions.push(vscode.commands.registerCommand('reactTest.go', () => showEditor({ isPreview: true })));
+	extension.subscriptions.push(vscode.commands.registerCommand('reactTest.launch', async () => await UiProviderPanel.render(extension)));
 }
 
 async function initializeFlatYml(): Promise<void> {

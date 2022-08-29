@@ -8,9 +8,6 @@ import * as fg from 'fast-glob';
 import * as fetch from 'isomorphic-fetch';
 import { parse, stringify } from 'yaml';
 import { debounce } from 'ts-debounce';
-
-import { Octokit } from '@octokit/rest';
-import { VSCodeGit } from './git';
 import { getNonce, getSession } from './lib';
 import type { FlatState } from './types';
 
@@ -115,10 +112,8 @@ export class FlatConfigEditor implements vscode.CustomTextEditorProvider {
 	private async getHtmlForWebview(webview: vscode.Webview): Promise<string> {
 		// Local path to script and css for the webview
 		const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'out/webviews/index.js'));
-
 		const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'out/webviews/index.css'));
-		const codiconsUri = webview.asWebviewUri(
-			vscode.Uri.joinPath(this.context.extensionUri, 'out/webviews/public/codicon.css'));
+		const codiconsUri = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'out/webviews/public/codicon.css'));
 
 		// Use a nonce to whitelist which scripts can be run
 		const nonce = getNonce();
