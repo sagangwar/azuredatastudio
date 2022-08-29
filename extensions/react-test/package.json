@@ -45,63 +45,12 @@
     ],
     "commands": [
       {
-        "command": "reactTest.go",
-        "title": "Run React Test",
-        "category": "Flat Editor",
-        "icon": "$(go-to-file)"
-      },
-      {
         "command": "reactTest.launch",
         "title": "Launch React Test",
         "category": "React Test",
         "icon": "$(go-to-file)"
-      },
-      {
-        "command": "flat.showPreview",
-        "title": "Show Editor",
-        "category": "Flat Editor",
-        "icon": "$(go-to-file)"
-      },
-      {
-        "command": "flat.showRaw",
-        "title": "Show Raw YAML File",
-        "category": "Flat Editor",
-        "icon": "$(go-to-file)"
-      },
-      {
-        "command": "flat.showPreviewToSide",
-        "title": "Show Editor to the Side",
-        "category": "Flat Editor",
-        "icon": "$(go-to-file)"
-      },
-      {
-        "command": "flat.showRawToSide",
-        "title": "Show Raw YAML File to the Side",
-        "category": "Flat Editor",
-        "icon": "$(go-to-file)"
-      },
-      {
-        "command": "flat.initializeFlatYml",
-        "title": "Initialize Flat YML File",
-        "category": "Flat Editor"
       }
-    ],
-    "menus": {
-      "editor/title": [
-        {
-          "command": "flat.showPreview",
-          "alt": "flat.showPreviewToSide",
-          "group": "navigation",
-          "when": "resourcePath =~ /.github/workflows/flat.yml$/ && editorLangId == yaml && activeEditor == workbench.editors.files.textFileEditor"
-        },
-        {
-          "command": "flat.showRaw",
-          "alt": "flat.showRawToSide",
-          "group": "navigation",
-          "when": "resourcePath =~ /.github/workflows/flat.yml$/ && activeEditor == WebviewEditor"
-        }
-      ]
-    }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "run-s clean compile",
