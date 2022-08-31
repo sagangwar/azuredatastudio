@@ -1,127 +1,58 @@
-import React, { useEffect } from 'react'
-import flatten from 'lodash-es/flatten'
-import uniq from 'lodash-es/uniq'
-import Jobs from './Jobs'
-import useFlatConfigStore from './store'
-import Triggers from './Triggers'
-import { flatStateValidationSchema } from './validation'
-import { VSCodeAPI } from './VSCodeAPI'
-import { FlatStep, PullSqlConfig } from '../../types'
-import { ErrorState } from './error-state'
+import * as React from 'react'
 import {
 	VSCodeButton,
 	VSCodeDivider,
-	VSCodeLink,
+	VSCodeRadio,
+	VSCodeRadioGroup,
 } from '@vscode/webview-ui-toolkit/react'
+import { RadioGroupOrientation } from '@vscode/webview-ui-toolkit/dist/radio-group';
 
 interface AppProps { }
 
 function App({ }: AppProps) {
-	const { state, setErrors, isStubData, gitRepo } = useFlatConfigStore()
-
-	if (!gitRepo) {
-		return <ErrorState />
-	}
-
-	const showErrorState = state.jobs.scheduled.steps
-		.filter(step => step.uses.includes('githubocto/flat'))
-		.some(step => {
-			return !Boolean((step as FlatStep)?.with?.downloaded_filename)
-		})
-
-	useEffect(() => {
-		flatStateValidationSchema
-			.validate(state, { abortEarly: false })
-			.then(function () {
-				setErrors([])
-			})
-			.catch(function (err) {
-				setErrors(err.inner)
-			})
-
-		if (isStubData) return
-
-		// Add push paths for all postprocessing files to "state"
-		let cloned = { ...state }
-
-		if (cloned.on.push) {
-			// @ts-ignore
-			cloned.on.push.paths = uniq([
-				'.github/workflows/flat.yml',
-				// ...flatten(
-				// 	state.jobs.scheduled.steps.map(step => {
-				// 		let files = []
-				// 		if (!(step as FlatStep).with) return []
-				// 		if ((step as FlatStep).with.postprocess !== undefined) {
-				// 			files.push((step as FlatStep).with.postprocess)
-				// 		}
-				// 		if (((step as FlatStep).with as PullSqlConfig).sql_queryfile) {
-				// 			files.push(
-				// 				((step as FlatStep).with as PullSqlConfig).sql_queryfile
-				// 			)
-				// 		}
-				// 		return files
-				// 	})
-				// ),
-			])
-		}
-
-		VSCodeAPI.postMessage({
-			command: 'updateText',
-			data: cloned,
-		})
-	}, [state])
-
-	const handleOpenRaw = () => {
-		VSCodeAPI.postMessage({
-			command: 'openEditor',
-			data: { isPreview: false, onSide: false },
-		})
-	}
-
-	const actionsUrl = gitRepo && `https://github.com/${gitRepo}/actions`
-
 	return (
 		<div className="p-16 space-y-6">
 			<header>
 				<div className="mb-2">
 					<h1 className="text-[26px] leading-[30px] font-medium my-0">
-						Flat Editor
+						Data Tier Application Wizard
 					</h1>
 				</div>
-				<div className="mb-4">
-					<p className="text-[13px] my-0">
-						This is a gui for setting up a Flat Action, which will pull external
-						data and update it using GitHub Actions.
-					</p>
-				</div>
-				<VSCodeButton onClick={handleOpenRaw}>View the raw YAML</VSCodeButton>
 			</header>
 			<VSCodeDivider />
-			<Triggers />
-			<Jobs />
-			<VSCodeDivider />
-			<div>
-				{showErrorState ? (
-					<div className="text-[color:var(--vscode-errorForeground)] flex items-center">
-						<span className="codicon codicon-warning" />
-						<p className="ml-1 my-0">
-							Make sure all of your steps have a{' '}
-							<span className="font-bold">downloaded_filename</span> specified!
-						</p>
-					</div>
-				) : (
-					<p className="my-0">
-						Commit, push, and check out your new Action on{' '}
-						<VSCodeLink className="align-super" href={actionsUrl}>
-							on GitHub
-						</VSCodeLink>{' '}
-						It should run automatically, once pushed.
-					</p>
-				)}
+			<VSCodeRadioGroup orientation={RadioGroupOrientation.vertical}>
+				<label slot="label">Step 1: Select an Operation</label>
+				<VSCodeRadio value={dacFxActions.publish} checked={true}>Deploy a data-tier application .dacpac to an instance of SQL Server [Deploy Dacpac]</VSCodeRadio>
+				<VSCodeRadio value={dacFxActions.extract}>Extract a data-tier application from an instance of SQL Server to a .dacpac file [Extract Dacpac]</VSCodeRadio>
+				<VSCodeRadio value={dacFxActions.import}>Create a database from a .bacpac file [Import Bacpac]</VSCodeRadio>
+				<VSCodeRadio value={dacFxActions.export}>Export the schema and data from a database to the logical .bacpac file format [Export Bacpac]</VSCodeRadio>
+			</VSCodeRadioGroup>
+			<div className="space-x-3">
+				<VSCodeButton onClick={previousClicked}>Previous</VSCodeButton>
+				<VSCodeButton onClick={nextClicked}>Next</VSCodeButton>
+				<VSCodeButton onClick={cancelClicked}>Cancel</VSCodeButton>
 			</div>
 		</div>
 	)
+}
+
+const enum dacFxActions {
+	publish = 'publish',
+	extract = 'extract',
+	import = 'import',
+	export = 'export'
+}
+
+function nextClicked() {
+	console.log("next clicked!");
+}
+
+function previousClicked() {
+	console.log("previous clicked!");
+}
+
+function cancelClicked() {
+	console.log("cancel clicked!");
 }
 
 export default App

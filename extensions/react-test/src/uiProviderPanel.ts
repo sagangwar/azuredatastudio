@@ -45,9 +45,6 @@ export class UiProviderPanel {
 		// Use a nonce to whitelist which scripts can be run
 		const nonce = getNonce();
 
-		const dirName = 'test dir name';
-		const gitRepo = 'benjin git repo';
-
 		return /* html */ `
 			<!DOCTYPE html>
 			<html lang="en">
@@ -64,10 +61,10 @@ export class UiProviderPanel {
 				<script nonce="${nonce}">
 					window.acquireVsCodeApi = acquireVsCodeApi;
 				</script>
-				<title>Schema Compare</title>
+				<title>Data Tier Application Wizard</title>
 			</head>
 			<body>
-				<div data-workspace="${dirName}" data-gitrepo="${gitRepo}" id="root"></div>
+				<div id="root"></div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
