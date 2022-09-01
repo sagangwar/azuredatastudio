@@ -12,10 +12,10 @@ export const HttpEndpointPreview: FunctionComponent<HttpEndpointPreviewProps> = 
 	const [fileContent, setFileContent] = React.useState<string | undefined>(undefined);
 
 	const fetchData = async () => {
-		VSCodeAPI.postMessage({
-			command: 'getUrlContents',
-			data: urlRef.current,
-		})
+		// VSCodeAPI.postMessage({
+		// 	command: 'getUrlContents',
+		// 	data: urlRef.current,
+		// })
 	}
 	const debounceFetchData = React.useCallback(debounce(fetchData, 600), [])
 

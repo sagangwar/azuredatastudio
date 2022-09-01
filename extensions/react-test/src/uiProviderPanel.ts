@@ -77,10 +77,19 @@ export class UiProviderPanel {
 
 	private setupWebviewMessageListener() {
 		this.panel.webview.onDidReceiveMessage(async (message) => {
-			const command = message.command;
-			const data = message.data;
+			const command: string = message.command;
+			const data: any = message.data;
 
 			console.log(`Received '${command}': ${data}`);
+
+			switch (command) {
+				case 'alert':
+					vscode.window.showInformationMessage(data);
+					break;
+				default:
+					vscode.window.showErrorMessage(`Unknown message type from webview: ${command}\n\n${data}`);
+					break;
+			}
 		});
 	}
 

@@ -13,10 +13,10 @@ export const FilePreview: FunctionComponent<FilePreviewProps> = props => {
 	React.useEffect(() => {
 		setFileContent(undefined)
 		fileRef.current = file
-		VSCodeAPI.postMessage({
-			command: 'getFileContents',
-			data: file,
-		})
+		// VSCodeAPI.postMessage({
+		// 	command: 'getFileContents',
+		// 	data: file,
+		// })
 	}, [file])
 
 	React.useEffect(() => {

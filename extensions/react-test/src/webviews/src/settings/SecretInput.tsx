@@ -34,10 +34,10 @@ const SecretInput: FunctionComponent<SecretInputProps> = props => {
 		localValue === fieldName
 
 	const handleSave = async () => {
-		VSCodeAPI.postMessage({
-			command: 'storeSecret',
-			data: { fieldName: innerFieldName, value: localValue },
-		})
+		// VSCodeAPI.postMessage({
+		// 	command: 'storeSecret',
+		// 	data: { fieldName: innerFieldName, value: localValue },
+		// })
 	}
 
 	React.useEffect(() => {

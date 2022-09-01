@@ -19,8 +19,8 @@ class VSCodeWrapper {
 	 * Send message to the extension framework.
 	 * @param message
 	 */
-	public postMessage(message: {command: string, data?: any}): void {
-		this.vscodeApi.postMessage(message)
+	public postMessage(command: Command, data?: any): void {
+		this.vscodeApi.postMessage({command: command, data: data});
 	}
 
 	/**
@@ -32,6 +32,10 @@ class VSCodeWrapper {
 		window.addEventListener('message', callback)
 		return () => window.removeEventListener('message', callback)
 	}
+}
+
+export enum Command {
+	alert = 'alert'
 }
 
 // Singleton to prevent multiple fetches of VsCodeAPI.

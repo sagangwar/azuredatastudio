@@ -62,10 +62,6 @@ useFlatConfigStore.setState({
 	isStubData: true,
 })
 
-VSCodeAPI.postMessage({ command: 'refreshFiles' });
-
-VSCodeAPI.postMessage({ command: 'refreshState' });
-
 window.addEventListener('message', e => {
 	// @ts-ignore
 	const message = e.data
