@@ -104,6 +104,12 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 	private async _initialize(storedAccounts: AzureAccount[]): Promise<AzureAccount[]> {
 		const accounts: AzureAccount[] = [];
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
+		if (this.authLibrary === 'MSAL') {
+			storedAccounts = storedAccounts.filter((account) => account.key.authLibrary === 'MSAL');
+		} else {
+			// TODO: Need to test behavior for when account.key.authLibrary === undefined
+			storedAccounts = storedAccounts.filter((account) => account.key.authLibrary !== 'MSAL');
+		}
 		for (let account of storedAccounts) {
 			if (this.authLibrary === 'ADAL') {
 				const azureAuth = this.getAuthMethod(account);
@@ -116,6 +122,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			}
 			else {
 				//TODO: if msal: do this
+				account.isStale = false;
 				accounts.push(account);
 			}
 		}
