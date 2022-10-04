@@ -6,10 +6,10 @@ type WizardTitleProps = {
 
 const WizardTitle: React.FunctionComponent<WizardTitleProps> = props => {
 	return (
-		<div className="h-32 w-screen bg-red-800">
-			<h1 className="text-[26px] leading-[30px] font-medium my-0">
+		<div className="h-8 w-screen bg-[color:var(--vscode-editor-background)] p-4">
+			<h2 className="text-[26px] leading-[30px] font-medium my-0">
 				{props.title}
-			</h1>
+			</h2>
 		</div>
 	);
 }

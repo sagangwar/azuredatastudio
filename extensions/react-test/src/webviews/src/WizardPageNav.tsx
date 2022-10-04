@@ -4,20 +4,46 @@ import { Command, VSCodeAPI } from './VSCodeAPI';
 
 type WizardPageNavProps = {
 	currentPage: number
+	numPages: number
 }
-
-const numPages = 4;
 
 const WizardPageNav: React.FunctionComponent<WizardPageNavProps> = props => {
 	return (
-		<div className="w-32 bg-yellow-800">
-			{[...Array(numPages)].map((e, i) => (
-				<svg className="stroke-purple-600 fill-purple-200" onClick={() => pageClicked(i+1)}>
-					<g transform='translate(24, 24)'>
-						<circle r="20" />
-						<text textAnchor='middle' alignmentBaseline='central'>{i+1}</text>
-					</g>
-				</svg>
+		<div className="flex-col w-16 bg-[color:var(--vscode-editor-background)] items-center">
+			<div className='h-12 w-12' />
+			{[...Array(props.currentPage - 1)].map((e, i) => (
+				<>
+					<svg className='w-12 h-12'>
+						<g transform='translate(24, 24)' onClick={() => pageClicked(i + 1)}>
+							<circle r='24' className='fill-purple-500' />
+							<text textAnchor='middle' alignmentBaseline='central' className='stroke-white'>{i + 1}</text>
+						</g>
+					</svg>
+					<svg className='stroke-purple-500 stroke-2 w-12 h-12'>
+						<line x1='24' y1='0' x2='24' y2='48' />
+					</svg>
+				</>
+			))}
+
+			<svg className='w-12 h-12'>
+				<g transform='translate(24, 24)' onClick={() => pageClicked(props.currentPage)}>
+					<circle r="23" className='stroke-white stroke-2 fill-purple-500' />
+					<text textAnchor='middle' alignmentBaseline='central' className='stroke-white'>{props.currentPage}</text>
+				</g>
+			</svg>
+
+			{[...Array(props.currentPage)].map((e, i) => (
+				<>
+					<svg className='stroke-gray-400 stroke-2 w-12 h-12'>
+						<line x1='24' y1='0' x2='24' y2='48' />
+					</svg>
+					<svg className='w-12 h-12'>
+						<g transform='translate(24, 24)' onClick={() => pageClicked(props.currentPage + i + 1)}>
+							<circle r="23" className='fill-gray-400' />
+							<text textAnchor='middle' alignmentBaseline='central' className='stroke-white'>{props.currentPage + i + 1}</text>
+						</g>
+					</svg>
+				</>
 			))}
 		</div>
 	);

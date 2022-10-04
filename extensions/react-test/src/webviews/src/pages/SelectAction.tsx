@@ -9,9 +9,9 @@ type SelectActionProps = {
 
 const SelectAction: React.FunctionComponent<SelectActionProps> = props => {
 	return (
-		<div className="w-full bg-blue-800">
-			<VSCodeRadioGroup orientation={RadioGroupOrientation.vertical} className="bg-blue-900">
-				<label slot="label">Step 1: Select an Operation</label>
+		<div className='w-full bg-[color:var(--vscode-activityBar-background)] p-4'>
+			<VSCodeRadioGroup orientation={RadioGroupOrientation.vertical}>
+				<h3 slot='label'>Step 1: Select an Operation</h3>
 				<VSCodeRadio value={dacFxActions.publish} checked={true}>Deploy a data-tier application .dacpac to an instance of SQL Server [Deploy Dacpac]</VSCodeRadio>
 				<VSCodeRadio value={dacFxActions.extract}>Extract a data-tier application from an instance of SQL Server to a .dacpac file [Extract Dacpac]</VSCodeRadio>
 				<VSCodeRadio value={dacFxActions.import}>Create a database from a .bacpac file [Import Bacpac]</VSCodeRadio>
