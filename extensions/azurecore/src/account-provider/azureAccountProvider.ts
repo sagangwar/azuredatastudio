@@ -48,6 +48,7 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 			const library = changeEvent.affectsConfiguration('authenticationLibrary');
 			if (library === true) {
 				this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+				// TODO: re-load account pane
 			}
 		});
 
@@ -105,20 +106,35 @@ export class AzureAccountProvider implements azdata.AccountProvider, vscode.Disp
 		const accounts: AzureAccount[] = [];
 		console.log(`Initializing stored accounts ${JSON.stringify(accounts)}`);
 		for (let account of storedAccounts) {
-			if (this.authLibrary === 'ADAL') {
-				const azureAuth = this.getAuthMethod(account);
-				if (!azureAuth) {
-					account.isStale = true;
+			// Only display accounts corresponding with currently selected auth library
+			if (this.authLibrary === account.key.authLibrary) {
+				if (this.authLibrary === 'ADAL') {
+					const azureAuth = this.getAuthMethod(account);
+					if (!azureAuth) {
+						account.isStale = true;
+						accounts.push(account);
+					} else {
+						accounts.push(await azureAuth.refreshAccess(account));
+					}
+				}
+				else {
+					account.isStale = false;
 					accounts.push(account);
-				} else {
-					accounts.push(await azureAuth.refreshAccess(account));
 				}
 			}
-			else {
-				//TODO: if msal: do this
-				account.isStale = false;
-				accounts.push(account);
+			// Scenario where user has added accounts pre-MSAL, (all accounts will be ADAL) account.key.authLibrary will be undefined
+			else if (account.key.authLibrary === undefined) {
+				if (this.authLibrary === 'ADAL') {
+					const azureAuth = this.getAuthMethod(account);
+					if (!azureAuth) {
+						account.isStale = true;
+						accounts.push(account);
+					} else {
+						accounts.push(await azureAuth.refreshAccess(account));
+					}
+				}
 			}
+
 		}
 		this.initComplete.resolve();
 		return accounts;
