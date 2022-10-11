@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -66,6 +67,16 @@ export class AccountManagementService implements IAccountManagementService {
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
 
 		_storageService.onWillSaveState(() => this.shutdown());
+		// this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		// vscode.workspace.onDidChangeConfiguration(async (changeEvent) => {
+		// 	const library = changeEvent.affectsConfiguration('authenticationLibrary');
+		// 	if (library === true) {
+		// 		this.authLibrary = vscode.workspace.getConfiguration('azure').get('authenticationLibrary');
+		// 		const accounts = await this._accountStore.getAllAccounts()
+
+		//  // TODO: re-load account pane
+		// 	}
+		// });
 	}
 
 	private get autoOAuthDialogController(): AutoOAuthDialogController {
