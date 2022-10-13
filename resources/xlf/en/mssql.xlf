@@ -928,6 +928,12 @@
     <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
       <source xml:lang="en">Trust server certificate</source>
     </trans-unit>
+    <trans-unit id="mssql.connectionOptions.hostNameInCertificate.description">
+      <source xml:lang="en">When specified (and encrypt=true and trustServerCertificate=false), SQL Server uses provided hostname for validating trust with the server certificate</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.hostNameInCertificate.displayName">
+      <source xml:lang="en">Hostname in certificate</source>
+    </trans-unit>
     <trans-unit id="mssql.connectionOptions.typeSystemVersion.description">
       <source xml:lang="en">Indicates which server type system the provider will expose through the DataReader</source>
     </trans-unit>

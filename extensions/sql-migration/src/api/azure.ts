@@ -709,7 +709,7 @@ export interface SqlConnectionInfo {
 	authentication: string;
 	username: string;
 	password: string;
-	encryptConnection: string;
+	encryptConnection: boolean;
 	trustServerCertificate: string;
 }
 

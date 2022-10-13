@@ -1055,7 +1055,34 @@
           "displayName": "%mssql.connectionOptions.encrypt.displayName%",
           "description": "%mssql.connectionOptions.encrypt.description%",
           "groupName": "%mssql.connectionOptions.groupName.security%",
-          "valueType": "boolean",
+          "valueType": "category",
+          "defaultValue": "mandatory",
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "Optional",
+              "name": "optional"
+            },
+            {
+              "displayName": "Mandatory (Recommended)",
+              "name": "mandatory"
+            },
+            {
+              "displayName": "Strict",
+              "name": "strict"
+            }
+          ],
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": null,
+          "isIdentity": false,
+          "name": "hostNameInCertificate",
+          "displayName": "%mssql.connectionOptions.hostNameInCertificate.displayName%",
+          "description": "%mssql.connectionOptions.hostNameInCertificate.description%",
+          "groupName": "%mssql.connectionOptions.groupName.security%",
+          "valueType": "string",
           "defaultValue": null,
           "objectType": null,
           "categoryValues": null,
