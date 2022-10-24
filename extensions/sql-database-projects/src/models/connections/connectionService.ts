@@ -55,7 +55,7 @@ export class ConnectionService {
 				savePassword: saveConnectionAndPassword,
 				user: profile.userName,
 				authenticationType: AuthenticationType.SqlLogin,
-				encrypt: 'mandatory',
+				encrypt: 'Mandatory',
 				connectTimeout: 30,
 				applicationName: 'SQL Database Project',
 				accountId: profile.accountId,

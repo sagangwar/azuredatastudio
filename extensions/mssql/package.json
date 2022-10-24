@@ -1042,20 +1042,20 @@
           "description": "%mssql.connectionOptions.encrypt.description%",
           "groupName": "%mssql.connectionOptions.groupName.security%",
           "valueType": "category",
-          "defaultValue": "mandatory",
+          "defaultValue": "Mandatory",
           "objectType": null,
           "categoryValues": [
             {
-              "displayName": "Optional",
-              "name": "optional"
+              "displayName": "Optional or False",
+              "name": "Optional"
             },
             {
-              "displayName": "Mandatory (Recommended)",
-              "name": "mandatory"
+              "displayName": "Mandatory or True (Default)",
+              "name": "Mandatory"
             },
             {
               "displayName": "Strict",
-              "name": "strict"
+              "name": "Strict"
             }
           ],
           "isRequired": false,
