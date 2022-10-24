@@ -215,7 +215,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 
 	test('getOptionsKey should create a valid unique id', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let expectedId = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
+		let expectedId = 'providerName:MSSQL|authenticationType:|connectionName:name|databaseName:database|serverName:new server|userName:user';
 		let id = conn.getOptionsKey();
 		assert.strictEqual(id, expectedId);
 	});
@@ -223,6 +223,13 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	test('getOptionsKey should create different id for different server names', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
 		let conn2 = new ProviderConnectionInfo(capabilitiesService, Object.assign({}, connectionProfile, { serverName: connectionProfile.serverName + '1' }));
+
+		assert.notStrictEqual(conn.getOptionsKey(), conn2.getOptionsKey());
+	});
+
+	test('getOptionsKey should create different id for different connection names', () => {
+		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
+		let conn2 = new ProviderConnectionInfo(capabilitiesService, Object.assign({}, connectionProfile, { connectionName: connectionProfile.connectionName + '1' }));
 
 		assert.notStrictEqual(conn.getOptionsKey(), conn2.getOptionsKey());
 	});

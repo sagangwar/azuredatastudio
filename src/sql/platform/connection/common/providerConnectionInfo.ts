@@ -209,15 +209,14 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	/**
 	 * Returns a key derived the connections options (providerName, authenticationType, serverName, databaseName, userName, groupid)
 	 * This key uniquely identifies a connection in a group
-	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
+	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|connectionName:Conn1|group:testid"
 	 */
 	public getOptionsKey(): string {
 		let idNames = [];
 		if (this.serverCapabilities) {
 			idNames = this.serverCapabilities.connectionOptions.map(o => {
 				if ((o.specialValueType || o.isIdentity)
-					&& o.specialValueType !== ConnectionOptionSpecialType.password
-					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName) {
+					&& o.specialValueType !== ConnectionOptionSpecialType.password) {
 					return o.name;
 				} else {
 					return undefined;

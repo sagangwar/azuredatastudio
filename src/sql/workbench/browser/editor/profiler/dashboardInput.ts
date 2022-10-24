@@ -158,6 +158,7 @@ export class DashboardInput extends EditorInput {
 			&& profile1.providerName === profile2.providerName
 			&& profile1.serverName === profile2.serverName
 			&& profile1.userName === profile2.userName
+			&& profile1.connectionName === profile2.connectionName
 			&& profile1.authenticationType === profile2.authenticationType
 			&& profile1.groupFullName === profile2.groupFullName;
 	}

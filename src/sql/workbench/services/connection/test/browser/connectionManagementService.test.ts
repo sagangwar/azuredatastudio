@@ -534,8 +534,8 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 		let connectionInfoString = 'providerName:' + profile.providerName + '|authenticationType:'
-			+ profile.authenticationType + '|databaseName:' + profile.databaseName + '|serverName:'
-			+ profile.serverName + '|userName:' + profile.userName;
+			+ profile.authenticationType + '|connectionName:' + profile.connectionName + '|databaseName:'
+			+ profile.databaseName + '|serverName:' + profile.serverName + '|userName:' + profile.userName;
 		await connect(uri1, options, true, profile);
 		let returnedProfile = connectionManagementService.findExistingConnection(profile);
 		assert.strictEqual(returnedProfile.getConnectionInfoId(), connectionInfoString);
