@@ -1073,7 +1073,8 @@
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "showOnConnectionDialog": true
         },
         {
           "specialValueType": null,
