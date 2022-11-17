@@ -143,8 +143,6 @@ export class CmsUtils {
 		let toSaveCmsServers: ICmsResourceNodeInfo[] = this._registeredCmsServers.map(server => Object.assign({}, server));
 		toSaveCmsServers.forEach(server => {
 			server.ownerUri = undefined;
-			// don't save password in config
-			server.connection.options.password = '';
 		});
 		await this.saveServers(toSaveCmsServers);
 	}
