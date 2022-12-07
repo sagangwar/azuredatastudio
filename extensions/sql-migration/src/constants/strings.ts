@@ -60,6 +60,14 @@ export const OPEN_SAVED_INFO_ERROR = localize("sql.migration.invalid.savedInfo",
 export const DATABASE_FOR_ASSESSMENT_PAGE_TITLE = localize('sql.migration.database.assessment.title', "Databases for assessment");
 export const DATABASE_FOR_ASSESSMENT_DESCRIPTION = localize('sql.migration.database.assessment.description', "Select the databases that you want to assess for migration to Azure SQL.");
 
+// XEvents assessment
+export const XEVENTS_ASSESSMENT_TITLE = localize('sql.migration.assessment.xevents.title', "Assess extended events traces");
+export const XEVENTS_ASSESSMENT_OK_BUTTON = localize('sql.migration.assessment.xevents.ok', "Add extended events traces");
+export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.assessment.xevents.description', "Select a folder on your local drive where extended events traces are stored.");
+export const XEVENTS_ASSESSMENT_INSTRUCTIONS = localize('sql.migration.assessment.xevents.instructions', "Select a folder on your local drive where extended events traces are stored");
+
+
+
 // Assessment results and recommendations
 export const ASSESSMENT_RESULTS_AND_RECOMMENDATIONS_PAGE_TITLE = localize('sql.migration.assessment.results.and.recommendations.title', "Assessment results and recommendations");
 export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');

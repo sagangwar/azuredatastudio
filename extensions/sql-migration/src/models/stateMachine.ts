@@ -197,6 +197,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _nodeNames!: string[];
 
 	public _databasesForAssessment!: string[];
+	public _xEventsFilesFolderPath!: string;
 	public _assessmentResults!: ServerAssessment;
 	public _assessedDatabaseList!: string[];
 	public _runAssessments: boolean = true;
@@ -312,7 +313,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getDatabaseAssessments(targetType: MigrationTargetType[]): Promise<ServerAssessment> {
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 		try {
-			const response = (await this.migrationService.getAssessments(ownerUri, this._databasesForAssessment))!;
+			const response = (await this.migrationService.getAssessments(ownerUri, this._databasesForAssessment, this._xEventsFilesFolderPath))!;
 			this._assessmentApiResponse = response;
 			this._assessedDatabaseList = this._databasesForAssessment.slice();
 

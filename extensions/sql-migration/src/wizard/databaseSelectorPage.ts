@@ -12,10 +12,12 @@ import { debounce } from '../api/utils';
 import * as styles from '../constants/styles';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { getDatabasesList, excludeDatabases } from '../api/sqlUtils';
+import { XEventsAssessmentDialog } from '../dialog/assessmentResults/xEventsAssessmentDialog';
 
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _databaseSelectorTable!: azdata.TableComponent;
+	private _xeventsAssessmentButton!: azdata.ButtonComponent;
 	private _dbNames!: string[];
 	private _dbCount!: azdata.TextComponent;
 	private _databaseTableValues!: any[];
@@ -215,12 +217,24 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			this._databaseSelectorTable.onRowSelected(
 				async (e) => await this.updateValuesOnSelection()));
 
+		this._xeventsAssessmentButton = this._view.modelBuilder.button().withProps({
+			label: constants.XEVENTS_ASSESSMENT_TITLE,
+			width: 180,
+			CSSStyles: {
+				...styles.BODY_CSS,
+				'margin-top': '8px'
+			}
+		}).component();
+		const xeventsAssessmentDialog = new XEventsAssessmentDialog(this.migrationStateModel);
+		this._disposables.push(this._xeventsAssessmentButton.onDidClick(
+			async (e) => await xeventsAssessmentDialog.openDialog()));
+
 		// load unfiltered table list and pre-select list of databases saved in state
 		await this._filterTableList('', this.migrationStateModel._databasesForAssessment);
 
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
-			height: '100%',
+			height: '90%',
 		}).withProps({
 			CSSStyles: {
 				'margin': '0px 28px 0px 28px'
@@ -230,6 +244,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._dbCount, { flex: '0 0 auto' });
 		flex.addItem(this._databaseSelectorTable);
+		flex.addItem(this._xeventsAssessmentButton, { flex: '0 0 auto' });
 		return flex;
 	}
 
