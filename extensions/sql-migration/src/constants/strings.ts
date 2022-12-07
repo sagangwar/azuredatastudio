@@ -63,9 +63,7 @@ export const DATABASE_FOR_ASSESSMENT_DESCRIPTION = localize('sql.migration.datab
 // XEvents assessment
 export const XEVENTS_ASSESSMENT_TITLE = localize('sql.migration.assessment.xevents.title', "Assess extended events traces");
 export const XEVENTS_ASSESSMENT_OK_BUTTON = localize('sql.migration.assessment.xevents.ok', "Add extended events traces");
-export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.assessment.xevents.description', "Select a folder on your local drive where extended events traces are stored.");
-export const XEVENTS_ASSESSMENT_INSTRUCTIONS = localize('sql.migration.assessment.xevents.instructions', "Select a folder on your local drive where extended events traces are stored");
-
+export const XEVENTS_ASSESSMENT_DESCRIPTION = localize('sql.migration.assessment.xevents.description', "You can assess ad-hoc queries via extended events traces. If the extended events include T-SQL scripts unsupported in Azure SQL Database or Managed Instance, the detected issues will be shown in the impacted objects wizard in the next step.");
 
 
 // Assessment results and recommendations

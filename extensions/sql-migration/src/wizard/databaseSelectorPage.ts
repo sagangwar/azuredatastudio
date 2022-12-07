@@ -220,6 +220,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		this._xeventsAssessmentButton = this._view.modelBuilder.button().withProps({
 			label: constants.XEVENTS_ASSESSMENT_TITLE,
 			width: 180,
+			enabled: false,
 			CSSStyles: {
 				...styles.BODY_CSS,
 				'margin-top': '8px'
@@ -291,5 +292,12 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				this._databaseSelectorTable.data?.length || 0)
 		});
 		this.migrationStateModel._databasesForAssessment = selectedDatabases;
+
+		//
+		if (selectedDatabases.length > 0) {
+			await this._xeventsAssessmentButton.updateProperties({ 'enabled': true });
+		} else {
+			await this._xeventsAssessmentButton.updateProperties({ 'enabled': false });
+		}
 	}
 }
