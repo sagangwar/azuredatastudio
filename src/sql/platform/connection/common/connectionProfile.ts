@@ -78,9 +78,13 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 				if (model.options.registeredServerDescription) {
 					this.registeredServerDescription = model.options.registeredServerDescription;
 				}
-				const expiry = model.options.expiresOn;
-				if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
-					this.options.expiresOn = model.options.expiresOn;
+				// Only set the expiresOn property if the authentication type is AzureMFA or AzureMFAAndUser
+				if (model.options.authenticationType === Constants.AuthenticationType.AzureMFA ||
+					model.options.authenticationType === Constants.AuthenticationType.AzureMFAAndUser) {
+					const expiry = model.options.expiresOn;
+					if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
+						this.options.expiresOn = model.options.expiresOn;
+					}
 				}
 			}
 			if (model.options?.originalDatabase) {
