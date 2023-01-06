@@ -297,7 +297,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 				+ '0';
 
 			if (!this._connectionService.isConnected(this._ownerUri)) {
-				this._connectionService.connect(connection, this._ownerUri).then(connectionResult => {
+				this._connectionService.connect(connection, 'backupRestore', this._ownerUri).then(connectionResult => {
 					this._sessionId = undefined;
 					this._currentProvider = this.getCurrentProviderId();
 					if (!this._restoreDialogs[this._currentProvider]) {

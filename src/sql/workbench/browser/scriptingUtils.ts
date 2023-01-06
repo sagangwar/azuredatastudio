@@ -57,7 +57,7 @@ export async function scriptSelect(connectionProfile: IConnectionProfile, metada
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			await connectionService.connect(connectionProfile, owner.uri, options);
+			await connectionService.connect(connectionProfile, 'scripting', owner.uri, options);
 		} else {
 			throw new Error(nls.localize('selectScriptNotGeneratedError', "Failed to generate select script for the selected object."));
 		}
@@ -84,7 +84,7 @@ export async function scriptEditSelect(connectionProfile: IConnectionProfile, me
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			await connectionService.connect(connectionProfile, owner.uri, options);
+			await connectionService.connect(connectionProfile, 'scripting', owner.uri, options);
 		} else {
 			throw new Error(nls.localize('selectScriptForEditNotGeneratedError', "Failed to generate script for Edit Data editor."));
 		}
@@ -142,7 +142,7 @@ export async function script(connectionProfile: IConnectionProfile, metadata: az
 					showConnectionDialogOnError: true,
 					showFirewallRuleOnError: true
 				};
-				await connectionService.connect(connectionProfile, owner.uri, options);
+				await connectionService.connect(connectionProfile, 'scripting', owner.uri, options);
 			} else {
 				let scriptNotFoundMsg = nls.localize('scriptNotFoundForObject', "No script was returned when scripting as {0} on object {1}",
 					GetScriptOperationName(operation), metadata.metadataTypeName);

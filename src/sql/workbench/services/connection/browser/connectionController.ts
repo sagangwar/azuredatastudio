@@ -73,7 +73,7 @@ export class ConnectionController implements IConnectionComponentController {
 				throw new Error('database cache didn\'t have value');
 			}
 		} else {
-			const connResult = await this._connectionManagementService.connect(tempProfile, uri);
+			const connResult = await this._connectionManagementService.connect(tempProfile, 'connection', uri);
 			if (connResult && connResult.connected) {
 				const result = await this._connectionManagementService.listDatabases(uri);
 				if (result && result.databaseNames) {

@@ -95,7 +95,7 @@ export class BackupUiService implements IBackupUiService {
 
 		// Create connection if needed
 		if (!this._connectionManagementService.isConnected(uri)) {
-			await this._connectionManagementService.connect(connection, uri);
+			await this._connectionManagementService.connect(connection, 'backupRestore', uri);
 			this._onShowBackupEvent.fire({ connection: connection, ownerUri: uri });
 		}
 	}

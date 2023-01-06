@@ -131,7 +131,7 @@ export class InsightsDialogController {
 			}
 			this._connectionProfile = connectionProfile;
 			this._connectionUri = Utils.generateUri(this._connectionProfile, 'insights');
-			return this._connectionManagementService.connect(this._connectionProfile, this._connectionUri).then(result => undefined);
+			return this._connectionManagementService.connect(this._connectionProfile, 'insights', this._connectionUri).then(result => undefined);
 		}
 	}
 

@@ -86,7 +86,7 @@ export class QueryEditorService implements IQueryEditorService {
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			this._connectionManagementService.connect(profile, queryInput.uri, options).catch(err => onUnexpectedError(err));
+			this._connectionManagementService.connect(profile, 'connection', queryInput.uri, options).catch(err => onUnexpectedError(err));
 		}
 		return queryInput;
 	}

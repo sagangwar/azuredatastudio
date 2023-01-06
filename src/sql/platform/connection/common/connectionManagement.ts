@@ -85,6 +85,8 @@ export const SERVICE_ID = 'connectionManagementService';
 
 export const IConnectionManagementService = createDecorator<IConnectionManagementService>(SERVICE_ID);
 
+// TODO: Should we have a separate value for refresh?
+export type ConnectionPurpose = 'dashboard' | 'insights' | 'connection' | 'notebook' | 'refreshToken' | 'objectExplorer' | 'profiler' | 'backupRestore' | 'scripting';
 export interface IConnectionManagementService {
 	_serviceBrand: undefined;
 
@@ -112,12 +114,12 @@ export interface IConnectionManagementService {
 	/**
 	 * Load the password and opens a new connection
 	 */
-	connect(connection: IConnectionProfile, uri?: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
+	connect(connection: IConnectionProfile, source: ConnectionPurpose, uri?: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
 
 	/**
 	 * Opens a new connection and save the profile in settings
 	 */
-	connectAndSaveProfile(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
+	connectAndSaveProfile(connection: IConnectionProfile, source: ConnectionPurpose, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
 
 	/**
 	 * Changes password of the connection profile's user.
@@ -133,14 +135,14 @@ export interface IConnectionManagementService {
 	 * Finds existing connection for given profile and purpose is any exists.
 	 * The purpose is connection by default
 	 */
-	findExistingConnection(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): ConnectionProfile;
+	findExistingConnection(connection: IConnectionProfile, purpose?: ConnectionPurpose): ConnectionProfile;
 
 	/**
 	 * If there's already a connection for given profile and purpose, returns the ownerUri for the connection
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
 	 * The purpose is connection by default
 	 */
-	connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection?: boolean): Promise<string>;
+	connectIfNotConnected(connection: IConnectionProfile, purpose?: ConnectionPurpose, saveConnection?: boolean): Promise<string>;
 
 	/**
 	 * Adds the successful connection to MRU and send the connection error back to the connection handler for failed connections

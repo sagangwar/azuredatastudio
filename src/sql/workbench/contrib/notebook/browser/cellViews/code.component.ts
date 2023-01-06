@@ -175,7 +175,7 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 				// connections
 				setTimeout(() => {
 					if (this.isActive()) {
-						connectionService.connect(this._model.context, cellUri).catch(e => this.logService.error(e));
+						connectionService.connect(this._model.context, 'notebook', cellUri).catch(e => this.logService.error(e));
 					}
 				}, 250);
 

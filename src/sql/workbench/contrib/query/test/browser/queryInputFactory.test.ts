@@ -16,7 +16,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { TestObjectExplorerService } from 'sql/workbench/services/objectExplorer/test/browser/testObjectExplorerService';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { IConnectionManagementService, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult, ConnectionPurpose } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
@@ -377,7 +377,7 @@ class MockConnectionManagementService extends TestConnectionManagementService {
 		return true;
 	}
 
-	public override connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
+	public override connect(connection: IConnectionProfile, source: ConnectionPurpose, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		this.numberConnects++;
 		this.connectionProfiles.set(uri, connection);
 		return Promise.resolve(undefined);

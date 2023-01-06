@@ -58,7 +58,7 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 			if (connectionId) {
 				let connection = this._connectionManagementService.getActiveConnections().filter(c => c.id === connectionId);
 				if (connection && connection.length > 0) {
-					this._connectionManagementService.connect(connection[0], fileUri, options).then(() => {
+					this._connectionManagementService.connect(connection[0], 'connection', fileUri, options).then(() => {
 						resolve();
 					}).catch(error => {
 						reject(error);
@@ -87,7 +87,7 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 		};
 
 		let profile: IConnectionProfile = new ConnectionProfile(this._capabilitiesService, connection).toIConnectionProfile();
-		let connectionResult = await this._connectionManagementService.connect(profile, fileUri, options);
+		let connectionResult = await this._connectionManagementService.connect(profile, 'connection', fileUri, options);
 		if (connectionResult && connectionResult.connected) {
 			this._logService.info(`editor ${fileUri} connected`);
 		}

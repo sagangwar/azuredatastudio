@@ -195,7 +195,7 @@ export class TreeUpdateUtils {
 					};
 				}
 
-				const result = await connectionManagementService.connect(connection, undefined, options, callbacks);
+				const result = await connectionManagementService.connect(connection, 'objectExplorer', undefined, options, callbacks);
 				if (result.connected) {
 					let existingConnection = connectionManagementService.findExistingConnection(connection);
 					return existingConnection;

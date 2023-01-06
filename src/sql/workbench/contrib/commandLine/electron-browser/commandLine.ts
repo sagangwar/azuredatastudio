@@ -277,7 +277,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 			if (this._notificationService) {
 				this._notificationService.status(localize('connectingQueryLabel', "Connecting query file"), { hideAfter: 2500 });
 			}
-			await this._connectionManagementService.connect(profile, uriString, options);
+			await this._connectionManagementService.connect(profile, 'connection', uriString, options);
 		}
 	}
 

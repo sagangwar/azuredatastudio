@@ -89,7 +89,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 					showConnectionDialogOnError: true,
 					showFirewallRuleOnError: true
 				};
-				this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
+				this.connectionManagementService.connect(profile, 'connection', queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
 			}
 		}
 	}

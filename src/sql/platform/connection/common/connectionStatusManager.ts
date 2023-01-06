@@ -14,6 +14,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import { values } from 'vs/base/common/collections';
 import { Schemas } from 'vs/base/common/network';
+import { ConnectionPurpose } from 'sql/platform/connection/common/connectionManagement';
 
 export class ConnectionStatusManager {
 
@@ -83,7 +84,7 @@ export class ConnectionStatusManager {
 		return connectionInfoForId ? connectionInfoForId.connectionProfile : undefined;
 	}
 
-	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
+	public addConnection(connection: IConnectionProfile, id: string, source: ConnectionPurpose): ConnectionManagementInfo {
 		this._logService.info(`Adding connection ${id}`);
 		// Always create a copy and save that in the list
 		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
@@ -94,7 +95,8 @@ export class ConnectionStatusManager {
 			connectionProfile: connectionProfile,
 			connecting: true,
 			serviceTimer: StopWatch.create(),
-			ownerUri: id
+			ownerUri: id,
+			source
 		};
 		this._connections[id] = connectionInfo;
 		this._logService.info(`Successfully added connection ${id}`);

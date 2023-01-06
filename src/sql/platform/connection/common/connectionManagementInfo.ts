@@ -6,6 +6,7 @@
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as azdata from 'azdata';
 import { StopWatch } from 'vs/base/common/stopwatch';
+import { ConnectionPurpose } from 'sql/platform/connection/common/connectionManagement';
 
 /**
  * Information for a document's connection. Exported for testing purposes.
@@ -62,4 +63,6 @@ export interface ConnectionManagementInfo {
 	 * Owner uri assigned to the connection
 	 */
 	ownerUri: string;
+
+	source: ConnectionPurpose;
 }

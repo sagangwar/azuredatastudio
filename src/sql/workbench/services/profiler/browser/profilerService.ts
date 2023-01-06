@@ -88,7 +88,7 @@ export class ProfilerService implements IProfilerService {
 			showFirewallRuleOnError: true
 		};
 		try {
-			await this._connectionService.connect(connectionProfile, uri, options);
+			await this._connectionService.connect(connectionProfile, 'profiler', uri, options);
 		} catch (connectionError) {
 
 		}

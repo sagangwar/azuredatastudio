@@ -8,7 +8,7 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import {
 	IConnectionManagementService, INewConnectionParams,
 	ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks,
-	IConnectionParams, IConnectionResult, RunQueryOnConnectionMode
+	IConnectionParams, IConnectionResult, RunQueryOnConnectionMode, ConnectionPurpose
 } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
@@ -299,7 +299,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param owner of the connection. Can be the editors
 	 * @param options to use after the connection is complete
 	 */
-	private tryConnect(connection: interfaces.IConnectionProfile, owner: IConnectableInput, options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
+	private tryConnect(connection: interfaces.IConnectionProfile, owner: IConnectableInput, source: ConnectionPurpose, options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
 		// Load the password if it's not already loaded
 		return this._connectionStore.addSavedPassword(connection).then(async result => {
 			let newConnection = result.profile;
@@ -327,7 +327,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
 			} else {
 				// Try to connect
-				return this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
+				return this.connectWithOptions(newConnection, source, owner.uri, options, owner).then(connectionResult => {
 					if (!connectionResult.connected && !connectionResult.errorHandled) {
 						// If connection fails show the dialog
 						return this.showConnectionDialogOnError(connection, owner, connectionResult, options);
@@ -374,7 +374,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param options to be used after the connection is completed
 	 * @param callbacks to call after the connection is completed
 	 */
-	public connect(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
+	public connect(connection: interfaces.IConnectionProfile, source: ConnectionPurpose, uri?: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		if (!uri) {
 			uri = Utils.generateUri(connection);
 		}
@@ -395,7 +395,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			//TODO: this should never happen. If the input is already passed, it should have the uri
 			this._logService.warn(`the given uri is different that the input uri. ${uri}|${input.uri}`);
 		}
-		return this.tryConnect(connection, input, options);
+		return this.tryConnect(connection, input, source, options);
 	}
 
 	/**
@@ -403,7 +403,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
 	 * The purpose is connection by default
 	 */
-	public connectIfNotConnected(connection: interfaces.IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook', saveConnection: boolean = false): Promise<string> {
+	public connectIfNotConnected(connection: interfaces.IConnectionProfile, purpose: ConnectionPurpose, saveConnection: boolean = false): Promise<string> {
 		let ownerUri: string = Utils.generateUri(connection, purpose);
 		if (this._connectionStatusManager.isConnected(ownerUri)) {
 			return Promise.resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
@@ -415,7 +415,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				params: undefined,
 				showFirewallRuleOnError: true,
 			};
-			return this.connect(connection, ownerUri, options).then(connectionResult => {
+			return this.connect(connection, purpose, ownerUri, options).then(connectionResult => {
 				if (connectionResult && connectionResult.connected) {
 					return this._connectionStatusManager.getOriginalOwnerUri(ownerUri);
 				} else {
@@ -438,7 +438,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * This method doesn't load the password because it only gets called from the
 	 * connection dialog and password should be already in the profile
 	 */
-	public connectAndSaveProfile(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks):
+	public connectAndSaveProfile(connection: interfaces.IConnectionProfile, source: ConnectionPurpose, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks):
 		Promise<IConnectionResult> {
 		if (!options) {
 			options = {
@@ -452,10 +452,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		// Do not override options.saveTheConnection as this is for saving to the server groups, not the MRU.
 		// MRU save always happens through a different path using tryAddActiveConnection
-		return this.connectWithOptions(connection, uri, options, callbacks);
+		return this.connectWithOptions(connection, source, uri, options, callbacks);
 	}
 
-	private async connectWithOptions(connection: interfaces.IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
+	private async connectWithOptions(connection: interfaces.IConnectionProfile, source: ConnectionPurpose, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		connection.options['groupId'] = connection.groupId;
 		connection.options['databaseDisplayName'] = connection.databaseName;
 
@@ -493,7 +493,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (options.saveTheConnection) {
 			connection.options.originalDatabase = connection.databaseName;
 		}
-		return this.createNewConnection(uri, connection).then(async connectionResult => {
+		return this.createNewConnection(uri, connection, source).then(async connectionResult => {
 			if (connectionResult && connectionResult.connected) {
 				// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
 				// the options.saveTheConnection setting
@@ -530,7 +530,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					return connectionResult;
 				}
 			} else if (connectionResult && connectionResult.errorMessage) {
-				return this.handleConnectionError(connection, uri, options, callbacks, connectionResult).catch(handleConnectionError => {
+				return this.handleConnectionError(connection, source, uri, options, callbacks, connectionResult).catch(handleConnectionError => {
 					if (callbacks.onConnectReject) {
 						callbacks.onConnectReject(handleConnectionError);
 					}
@@ -550,13 +550,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private handleConnectionError(connection: interfaces.IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
+	private handleConnectionError(connection: interfaces.IConnectionProfile, source: ConnectionPurpose, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 		if (options.showFirewallRuleOnError && connectionResult.errorCode) {
 			return this.handleFirewallRuleError(connection, connectionResult).then(success => {
 				if (success) {
 					options.showFirewallRuleOnError = false;
-					return this.connectWithOptions(connection, uri, options, callbacks);
+					return this.connectWithOptions(connection, source, uri, options, callbacks);
 				} else {
 					if (callbacks.onConnectReject) {
 						callbacks.onConnectReject(connectionNotAcceptedError);
@@ -988,7 +988,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (expiry - currentTime < maxTolerance) {
 					this._logService.debug(`Access token expired for connection ${connectionProfile.id} with uri ${uri}`);
 					try {
-						const connectionResultPromise = this.connect(connectionProfile, uri);
+						const connectionResultPromise = this.connect(connectionProfile, 'refreshToken', uri);
 						this._uriToReconnectPromiseMap[uri] = connectionResultPromise;
 						const connectionResult = await connectionResultPromise;
 						if (!connectionResult) {
@@ -1265,11 +1265,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 
 	// Connect an open URI to a connection profile
-	private createNewConnection(uri: string, connection: interfaces.IConnectionProfile): Promise<IConnectionResult> {
+	private createNewConnection(uri: string, connection: interfaces.IConnectionProfile, source: ConnectionPurpose): Promise<IConnectionResult> {
 		const self = this;
 		this._logService.info(`Creating new connection ${uri}`);
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			let connectionInfo = this._connectionStatusManager.addConnection(connection, uri);
+			let connectionInfo = this._connectionStatusManager.addConnection(connection, uri, source);
 			// Setup the handler for the connection complete notification to call
 			connectionInfo.connectHandler = ((connectResult, errorMessage, errorCode, callStack) => {
 				let connectionMngInfo = this._connectionStatusManager.findConnection(uri);
@@ -1399,7 +1399,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Finds existing connection for given profile and purpose is any exists.
 	 * The purpose is connection by default
 	 */
-	public findExistingConnection(connection: interfaces.IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook'): ConnectionProfile {
+	public findExistingConnection(connection: interfaces.IConnectionProfile, purpose?: ConnectionPurpose): ConnectionProfile {
 		let connectionUri = Utils.generateUri(connection, purpose);
 		let existingConnection = this._connectionStatusManager.findConnection(connectionUri);
 		if (existingConnection && this._connectionStatusManager.isConnected(connectionUri)) {

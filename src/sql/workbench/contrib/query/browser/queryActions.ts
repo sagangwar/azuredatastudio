@@ -130,7 +130,7 @@ export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionPr
 			showFirewallRuleOnError: true
 		};
 		if (profile) {
-			return connectionManagementService.connect(profile, owner.uri, options).then();
+			return connectionManagementService.connect(profile, 'connection', owner.uri, options).then();
 		}
 		return undefined;
 	});
@@ -182,7 +182,7 @@ CommandsRegistry.registerCommand({
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
 			};
-			return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), owner.uri, options);
+			return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), 'connection', owner.uri, options);
 		}
 		return true;
 	}

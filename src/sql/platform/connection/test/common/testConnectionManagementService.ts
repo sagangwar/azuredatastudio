@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionManagementService, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult, INewConnectionParams }
+import { IConnectionManagementService, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult, INewConnectionParams, ConnectionPurpose }
 	from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -166,17 +166,17 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return false;
 	}
 
-	findExistingConnection(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): ConnectionProfile {
+	findExistingConnection(connection: IConnectionProfile, purpose?: ConnectionPurpose): ConnectionProfile {
 		return undefined!;
 	}
 
-	connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
+	connect(connection: IConnectionProfile, source: ConnectionPurpose, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			resolve({ connected: true, errorMessage: undefined!, errorCode: undefined!, callStack: undefined! });
 		});
 	}
 
-	connectAndSaveProfile(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
+	connectAndSaveProfile(connection: IConnectionProfile, source: ConnectionPurpose, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		return new Promise<IConnectionResult>(() => true);
 	}
 
@@ -254,7 +254,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	}
 
-	connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection: boolean = false): Promise<string> {
+	connectIfNotConnected(connection: IConnectionProfile, purpose?: ConnectionPurpose, saveConnection: boolean = false): Promise<string> {
 		return undefined!;
 	}
 

@@ -144,7 +144,7 @@ CommandsRegistry.registerCommand('azdata.connect',
 			};
 			const connectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesServices, profile);
 
-			connectionManagementService.connect(connectionProfile, undefined, {
+			connectionManagementService.connect(connectionProfile, 'connection', undefined, {
 				saveTheConnection: true,
 				showDashboard: true,
 				params: undefined,

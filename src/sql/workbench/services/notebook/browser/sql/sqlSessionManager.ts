@@ -333,7 +333,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			this._newConnection = false;
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
 			this.addQueryEventListeners(this._queryRunner);
-			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
+			this._connectionManagementService.connect(this._currentConnectionProfile, 'notebook', this._connectionPath).then((result) => {
 				this._queryRunner.runQuery(code).catch(err => onUnexpectedError(err));
 			}).catch(err => onUnexpectedError(err));
 		} else {

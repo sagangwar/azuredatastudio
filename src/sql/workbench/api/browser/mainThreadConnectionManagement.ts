@@ -171,7 +171,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		if (connectionCompletionOptions && connectionCompletionOptions.saveConnection) {
 			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
 			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
-			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
+			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, 'connection', undefined, {
 				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
 				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
 				params: undefined,
@@ -236,7 +236,7 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 	public $connect(connectionProfile: IConnectionProfile, saveConnection: boolean = true, showDashboard: boolean = true): Thenable<azdata.ConnectionResult> {
 		let profile = new ConnectionProfile(this._capabilitiesService, connectionProfile);
 		profile.id = generateUuid();
-		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {
+		return this._connectionManagementService.connectAndSaveProfile(profile, 'connection', undefined, {
 			saveTheConnection: saveConnection,
 			showDashboard: showDashboard,
 			params: undefined,

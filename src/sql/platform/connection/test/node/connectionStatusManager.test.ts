@@ -81,9 +81,9 @@ suite('SQL ConnectionStatusManager tests', () => {
 		connection1Id = Utils.generateUri(connectionProfile);
 		connection2Id = 'connection2Id';
 		connection3Id = 'connection3Id';
-		connections.addConnection(connectionProfile, connection1Id);
-		connections.addConnection(editorConnectionProfile, connection2Id);
-		connections.addConnection(connectionProfileWithoutDbName, connection3Id);
+		connections.addConnection(connectionProfile, connection1Id, 'connection');
+		connections.addConnection(editorConnectionProfile, connection2Id, 'connection');
+		connections.addConnection(connectionProfileWithoutDbName, connection3Id, 'connection');
 	});
 
 	test('findConnection should return undefined given invalid id', () => {
@@ -138,7 +138,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 			connectionSummary: undefined!
 		};
 		connections.onConnectionComplete(summary);
-		let actual = connections.addConnection(connectionProfile, connection1Id).connecting;
+		let actual = connections.addConnection(connectionProfile, connection1Id, 'connection').connecting;
 		assert.strictEqual(actual, expected);
 	});
 
@@ -163,7 +163,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 	test('updateConnection should update the connection info', () => {
 		let expected = connectionProfile.groupId + '1';
 		let expectedConnectionId = 'new id';
-		connections.addConnection(connectionProfile, connection1Id);
+		connections.addConnection(connectionProfile, connection1Id, 'connection');
 
 		let updatedConnection = Object.assign({}, connectionProfile, { groupId: expected, getOptionsKey: () => connectionProfile.getOptionsKey() + expected, id: expectedConnectionId });
 		let actualId = connections.updateConnectionProfile(updatedConnection, connection1Id);
@@ -244,8 +244,8 @@ suite('SQL ConnectionStatusManager tests', () => {
 		newConnection.id = 'test_id';
 		newConnection.serverName = 'new_server_name';
 		newConnection.options['databaseDisplayName'] = newConnection.databaseName;
-		connections.addConnection(newConnection, 'test_uri_1');
-		connections.addConnection(newConnection, 'test_uri_2');
+		connections.addConnection(newConnection, 'test_uri_1', 'connection');
+		connections.addConnection(newConnection, 'test_uri_2', 'connection');
 		newConnection = new ConnectionProfile(capabilitiesService, newConnection);
 
 		// Get the connections and verify that the duplicate is only returned once

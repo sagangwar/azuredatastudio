@@ -10,7 +10,8 @@ import { ConnectionStore } from 'sql/platform/connection/common/connectionStore'
 import {
 	INewConnectionParams, ConnectionType,
 	IConnectionCompletionOptions, IConnectionResult, IConnectionParams,
-	RunQueryOnConnectionMode
+	RunQueryOnConnectionMode,
+	ConnectionPurpose
 } from 'sql/platform/connection/common/connectionManagement';
 import * as Constants from 'sql/platform/connection/common/constants';
 import * as Utils from 'sql/platform/connection/common/utils';
@@ -239,7 +240,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	}
 
-	async function connect(uri: string, options?: IConnectionCompletionOptions, fromDialog?: boolean, connection?: IConnectionProfile, error?: string, errorCode?: number, errorCallStack?: string, serverInfo?: azdata.ServerInfo): Promise<IConnectionResult> {
+	async function connect(uri: string, source: ConnectionPurpose, options?: IConnectionCompletionOptions, fromDialog?: boolean, connection?: IConnectionProfile, error?: string, errorCode?: number, errorCallStack?: string, serverInfo?: azdata.ServerInfo): Promise<IConnectionResult> {
 		let connectionToUse = connection ? connection : connectionProfile;
 		let id = connectionToUse.getOptionsKey();
 		let defaultUri = 'connection:' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
@@ -261,9 +262,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		});
 		await connectionManagementService.cancelConnectionForUri(uri);
 		if (fromDialog) {
-			return connectionManagementService.connectAndSaveProfile(connectionToUse, uri, options);
+			return connectionManagementService.connectAndSaveProfile(connectionToUse, 'connection', uri, options);
 		} else {
-			return connectionManagementService.connect(connectionToUse, uri, options);
+			return connectionManagementService.connect(connectionToUse, 'connection', uri, options);
 		}
 	}
 
@@ -304,7 +305,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery
 		};
 
-		await connect(params.input.uri);
+		await connect(params.input.uri, 'connection');
 		let saveConnection = connectionManagementService.getConnectionProfile(params.input.uri);
 
 		assert.notStrictEqual(saveConnection, undefined, `profile was not added to the connections`);
@@ -328,7 +329,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri, options);
+		await connect(uri, 'connection', options);
 		verifyOptions(options);
 	});
 
@@ -349,7 +350,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	// 		showFirewallRuleOnError: false
 	// 	};
 
-	// 	await connect(uri, options);
+	// 	await connect(uri, 'connection', options);
 	// 	verifyOptions(options);
 	// });
 
@@ -378,7 +379,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri, options);
+		await connect(uri, 'connection', options);
 		verifyOptions(options);
 		assert.notStrictEqual(paramsInOnConnectSuccess, undefined);
 		assert.strictEqual(paramsInOnConnectSuccess.connectionType, options.params.connectionType);
@@ -388,7 +389,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let uri: string = 'Editor Uri';
 		let options: IConnectionCompletionOptions = undefined;
 
-		await connect(uri, options, true);
+		await connect(uri, 'connection', options, true);
 		verifyOptions(options, true);
 	});
 
@@ -396,7 +397,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let uri = undefined;
 		let options: IConnectionCompletionOptions = undefined;
 
-		await connect(uri, options);
+		await connect(uri, 'connection', options);
 		assert.strictEqual(connectionManagementService.isProfileConnected(connectionProfile), true);
 	});
 
@@ -421,7 +422,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			callStack: errorCallStack
 		};
 
-		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
+		let result = await connect(uri, 'connection', options, false, connectionProfile, error, errorCode, errorCallStack);
 		assert.strictEqual(result.connected, expectedConnection);
 		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowFirewallRuleDialog(connectionProfile, false);
@@ -449,7 +450,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			callStack: errorCallStack
 		};
 
-		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
+		let result = await connect(uri, 'connection', options, false, connectionProfile, error, errorCode, errorCallStack);
 		assert.strictEqual(result.connected, expectedConnection);
 		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowFirewallRuleDialog(connectionProfile, false);
@@ -475,7 +476,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri, options);
+		await connect(uri, 'connection', options);
 		let saveConnection = connectionManagementService.getConnectionProfile(uri);
 		let changedConnectionInfo: azdata.ChangedConnectionInfo = { connectionUri: uri, connection: saveConnection };
 		let called = false;
@@ -536,7 +537,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let connectionInfoString = 'providerName:' + profile.providerName + '|authenticationType:'
 			+ profile.authenticationType + '|databaseName:' + profile.databaseName + '|serverName:'
 			+ profile.serverName + '|userName:' + profile.userName;
-		await connect(uri1, options, true, profile);
+		await connect(uri1, 'connection', options, true, profile);
 		let returnedProfile = connectionManagementService.findExistingConnection(profile);
 		assert.strictEqual(returnedProfile.getConnectionInfoId(), connectionInfoString);
 	});
@@ -568,7 +569,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStore.setup(x => x.deleteConnectionFromConfiguration(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		// deleteConnection should work for profile not connected.
 		assert(connectionManagementService.deleteConnection(profile));
-		await connect(uri1, options, true, profile);
+		await connect(uri1, 'connection', options, true, profile);
 		assert(connectionManagementService.deleteConnection(profile));
 	});
 
@@ -599,7 +600,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		};
 
 		connectionStore.setup(x => x.deleteGroupFromConfiguration(TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		await connect(uri1, options, true, profile);
+		await connect(uri1, 'connection', options, true, profile);
 		let result = await connectionManagementService.deleteConnectionGroup(profileGroup);
 		assert(result);
 	});
@@ -637,7 +638,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri, options, true, profile);
+		await connect(uri, 'connection', options, true, profile);
 		assert(!connectionManagementService.isProfileConnecting(profile));
 	});
 
@@ -665,7 +666,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri, options, true, profile);
+		await connect(uri, 'connection', options, true, profile);
 		await connectionManagementService.disconnect(profile);
 		assert(!connectionManagementService.isProfileConnected(profile));
 	});
@@ -694,7 +695,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri, options, true, profile);
+		await connect(uri, 'connection', options, true, profile);
 		await connectionManagementService.disconnect(uri);
 		assert(!connectionManagementService.isProfileConnected(profile));
 	});
@@ -723,7 +724,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri, options, true, profile);
+		await connect(uri, 'connection', options, true, profile);
 		await connectionManagementService.cancelConnection(profile);
 		assert(!connectionManagementService.isConnected(undefined, profile));
 	});
@@ -751,7 +752,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri, options);
+		await connect(uri, 'connection', options);
 		let result = await connectionManagementService.cancelEditorConnection(options.params.input);
 		assert.strictEqual(result, false);
 		assert(connectionManagementService.isConnected(uri));
@@ -782,7 +783,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri, options, true, profile);
+		await connect(uri, 'connection', options, true, profile);
 		// invalid uri check.
 		assert.strictEqual(connectionManagementService.getConnectionProfile(badString), undefined);
 		let returnedProfile = connectionManagementService.getConnectionProfile(uri);
@@ -814,7 +815,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri, options, true, profile);
+		await connect(uri, 'connection', options, true, profile);
 		let result = await connectionManagementService.connectIfNotConnected(profile, undefined, true);
 		assert.strictEqual(result, uri);
 	});
@@ -852,7 +853,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let getConnectionResult = await connectionManagementService.getConnectionString(badString);
 		// test for invalid profile id
 		assert.strictEqual(getConnectionResult, undefined);
-		await connect(uri, options, true, profile);
+		await connect(uri, 'connection', options, true, profile);
 		let currentConnections = connectionManagementService.getConnections(true);
 		let profileId = currentConnections[0].id;
 		let testConnectionString = 'test_connection_string';
@@ -894,7 +895,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			return Promise.resolve();
 		});
 		await assert.rejects(async () => await connectionManagementService.rebuildIntelliSenseCache(uri));
-		await connect(uri, options, true, profile);
+		await connect(uri, 'connection', options, true, profile);
 		await connectionManagementService.rebuildIntelliSenseCache(uri);
 		assert(cacheRebuilt);
 	});
@@ -929,7 +930,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			let ConnectionInfo: azdata.ConnectionInfo = { options: options };
 			return Promise.resolve(ConnectionInfo);
 		});
-		await connect(uri, options, true, profile);
+		await connect(uri, 'connection', options, true, profile);
 		let result = await connectionManagementService.buildConnectionInfo(testConnectionString, providerName);
 		assert.strictEqual(result.options, options);
 	});
@@ -969,7 +970,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showConnectionDialogOnError: true,
 			showFirewallRuleOnError: true
 		};
-		let result = await connect(uri, options, true, profile);
+		let result = await connect(uri, 'connection', options, true, profile);
 		assert.strictEqual(result.connected, true);
 		assert.strictEqual(connectionManagementService.getConnectionProfileById(badString), undefined);
 		let currentConnections = connectionManagementService.getConnections(true);
@@ -1004,11 +1005,11 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri1, options, true, profile);
+		await connect(uri1, 'connection', options, true, profile);
 		let newProfile = Object.assign({}, connectionProfile);
 		newProfile.connectionName = newname;
 		options.params.isEditConnection = true;
-		await connect(uri1, options, true, newProfile);
+		await connect(uri1, 'connection', options, true, newProfile);
 		assert.strictEqual(connectionManagementService.getConnectionProfile(uri1).connectionName, newname);
 	});
 
@@ -1038,9 +1039,9 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri1, options, true, profile);
+		await connect(uri1, 'connection', options, true, profile);
 		options.params.isEditConnection = true;
-		await connect(uri2, options, true, profile);
+		await connect(uri2, 'connection', options, true, profile);
 		let uri1info = connectionManagementService.getConnectionInfo(uri1);
 		let uri2info = connectionManagementService.getConnectionInfo(uri2);
 		assert.strictEqual(uri1info.connectionProfile.id, uri2info.connectionProfile.id);
@@ -1065,7 +1066,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		let result = await connect(uri, options, false, connectionProfile, error, errorCode);
+		let result = await connect(uri, 'connection', options, false, connectionProfile, error, errorCode);
 		assert.strictEqual(result.connected, expectedConnection);
 		assert.strictEqual(result.errorMessage, expectedError);
 		verifyShowFirewallRuleDialog(connectionProfile, true);
@@ -1096,7 +1097,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			callStack: errorCallStack
 		};
 
-		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
+		let result = await connect(uri, 'connection', options, false, connectionProfile, error, errorCode, errorCallStack);
 		assert.strictEqual(result.connected, expectedConnection);
 		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowFirewallRuleDialog(connectionProfile, false);
@@ -1176,7 +1177,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			callStack: errorCallStack
 		};
 
-		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
+		let result = await connect(uri, 'connection', options, false, connectionProfile, error, errorCode, errorCallStack);
 		assert.strictEqual(result.connected, expectedConnection);
 		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowFirewallRuleDialog(connectionProfile, true);
@@ -1208,7 +1209,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			callStack: errorCallStack
 		};
 
-		let result = await connect(uri, options, false, connectionProfile, error, errorCode, errorCallStack);
+		let result = await connect(uri, 'connection', options, false, connectionProfile, error, errorCode, errorCallStack);
 		assert.strictEqual(result, undefined);
 		verifyShowFirewallRuleDialog(connectionProfile, true);
 		verifyShowConnectionDialog(connectionProfile, ConnectionType.default, uri, true, connectionResult, false);
@@ -1232,7 +1233,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			callStack: undefined
 		};
 
-		let result = await connect(uri, options, false, connectionProfileWithEmptyUnsavedPassword);
+		let result = await connect(uri, 'connection', options, false, connectionProfileWithEmptyUnsavedPassword);
 		assert.strictEqual(result.connected, expectedConnection);
 		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowConnectionDialog(connectionProfileWithEmptyUnsavedPassword, ConnectionType.default, uri, true, connectionResult);
@@ -1257,7 +1258,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			callStack: undefined
 		};
 
-		let result = await connect(uri, options, false, connectionProfileWithEmptySavedPassword);
+		let result = await connect(uri, 'connection', options, false, connectionProfileWithEmptySavedPassword);
 		assert.strictEqual(result.connected, expectedConnection);
 		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowConnectionDialog(connectionProfileWithEmptySavedPassword, ConnectionType.default, uri, true, connectionResult, false);
@@ -1293,7 +1294,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			callStack: undefined
 		};
 
-		let result = await connect(uri, options, false, connectionProfileWithEmptySavedPassword);
+		let result = await connect(uri, 'connection', options, false, connectionProfileWithEmptySavedPassword);
 		assert.strictEqual(result.connected, expectedConnection);
 		assert.strictEqual(result.errorMessage, connectionResult.errorMessage);
 		verifyShowConnectionDialog(connectionProfileWithEmptySavedPassword, ConnectionType.editor, uri, true, connectionResult, false);
@@ -1321,7 +1322,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			showFirewallRuleOnError: true
 		};
 
-		await connect(uri, options, false, connectionProfileWithEmptySavedPassword);
+		await connect(uri, 'connection', options, false, connectionProfileWithEmptySavedPassword);
 		let result = await connectionManagementService.disconnectEditor(options.params.input);
 		assert(result);
 	});
@@ -1380,7 +1381,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			}
 		};
 		connectionManagementService.registerIconProvider('MSSQL', mockIconProvider);
-		await connect(uri, options, true, profile, undefined, undefined, undefined, serverInfo);
+		await connect(uri, 'connection', options, true, profile, undefined, undefined, undefined, serverInfo);
 		assert(called);
 	});
 
@@ -1458,7 +1459,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionManagementService.onLanguageFlavorChanged((changeParams: azdata.DidChangeLanguageFlavorParams) => {
 			called = true;
 		});
-		await connect(uri, options);
+		await connect(uri, 'connection', options);
 		called = false; //onLanguageFlavorChanged is called when connecting, must set back to false.
 		connectionManagementService.ensureDefaultLanguageFlavor(uri);
 		assert.strictEqual(called, false, 'do not expect flavor change to be called');
@@ -1474,7 +1475,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let connectionProfileWithDb: IConnectionProfile = Object.assign(connectionProfileWithoutDb, { databaseName: dbName });
 		// Save the database with a URI that has the database name filled in, to mirror Carbon's behavior
 		let ownerUri = Utils.generateUri(connectionProfileWithDb);
-		await connect(ownerUri, undefined, false, connectionProfileWithoutDb);
+		await connect(ownerUri, 'connection', undefined, false, connectionProfileWithoutDb);
 		// If I get the URI for the connection with or without a database from the connection management service
 		let actualUriWithDb = connectionManagementService.getConnectionUri(connectionProfileWithDb);
 		let actualUriWithoutDb = connectionManagementService.getConnectionUri(connectionProfileWithoutDb);
@@ -1512,7 +1513,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		};
 		mssqlConnectionProvider.setup(x => x.listDatabases(ownerUri)).returns(() => listDatabasesThenable(ownerUri));
 		mssqlConnectionProvider.setup(x => x.changeDatabase(ownerUri, newDbName)).returns(() => changeDatabasesThenable(ownerUri, newDbName));
-		await connect(ownerUri, undefined, false, connectionProfileWithoutDb);
+		await connect(ownerUri, 'connection', undefined, false, connectionProfileWithoutDb);
 		let listDatabasesResult = await connectionManagementService.listDatabases(ownerUri);
 		assert.strictEqual(listDatabasesResult.databaseNames.length, 1);
 		assert.strictEqual(listDatabasesResult.databaseNames[0], dbName);
@@ -1544,7 +1545,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			color: expectedColor
 		});
 		let uri = 'testUri';
-		await connect(uri);
+		await connect(uri, 'connection');
 		let tabColor = connectionManagementService.getTabColorForUri(uri);
 		assert.strictEqual(tabColor, expectedColor);
 	});
@@ -1553,7 +1554,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let profile = Object.assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
-		connectionStatusManager.addConnection(profile, 'test_uri');
+		connectionStatusManager.addConnection(profile, 'test_uri', 'connection');
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
 		let credentials = await connectionManagementService.getConnectionCredentials(profile.id);
 		assert.strictEqual(credentials['password'], profile.options['password']);
@@ -1616,7 +1617,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		let uri = 'test_initial_uri';
-		connectionStatusManager.addConnection(profile, uri);
+		connectionStatusManager.addConnection(profile, uri, 'connection');
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
 
 		// If I call getConnectionUriFromId on the given connection
@@ -1634,7 +1635,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let profile = Object.assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
-		connectionStatusManager.addConnection(profile, Utils.generateUri(profile));
+		connectionStatusManager.addConnection(profile, Utils.generateUri(profile), 'connection');
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
 
 		// If I call getConnectionUriFromId with a different URI than the connection's
@@ -1751,7 +1752,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		}));
 
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
-		await connect(uri, undefined, false, azureConnectionProfile);
+		await connect(uri, 'connection', undefined, false, azureConnectionProfile);
 
 		const oldProfile = connectionStatusManager.getConnectionProfile(uri);
 		assert.strictEqual(oldProfile.options['expiresOn'], expiredToken.expiresOn);
@@ -1823,7 +1824,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		}));
 
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
-		await connect(uri, undefined, false, sqlAuthConnectionProfile);
+		await connect(uri, 'connection', undefined, false, sqlAuthConnectionProfile);
 
 		const oldProfile = connectionStatusManager.getConnectionProfile(uri);
 		assert.strictEqual(oldProfile.options['expiresOn'], undefined);

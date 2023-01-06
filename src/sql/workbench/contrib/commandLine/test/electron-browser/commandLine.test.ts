@@ -401,6 +401,7 @@ suite('commandLineService tests', () => {
 		editorService.setup(e => e.editors).returns(() => [queryInput]);
 		connectionManagementService.setup(c =>
 			c.connect(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver' && p.authenticationType === Constants.AuthenticationType.SqlLogin),
+				'connection',
 				uri.toString(),
 				TypeMoq.It.is<IConnectionCompletionOptions>(i => i.params.input === queryInput && i.params.connectionType === ConnectionType.editor))
 		).verifiable(TypeMoq.Times.once());

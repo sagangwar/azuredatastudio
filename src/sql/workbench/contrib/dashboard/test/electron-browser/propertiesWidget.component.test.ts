@@ -91,7 +91,7 @@ suite('Dashboard Properties Widget Tests', () => {
 		dashboardService.setup(x => x.adminService).returns(() => singleAdminService.object);
 
 		let singleConnectionService = TypeMoq.Mock.ofType(SingleConnectionManagementService);
-		singleConnectionService.setup(x => x.connectionInfo).returns(() => ({ serverInfo, providerId: undefined, connectionProfile: undefined, extensionTimer: undefined, serviceTimer: undefined, intelliSenseTimer: undefined, connecting: undefined, ownerUri: undefined }));
+		singleConnectionService.setup(x => x.connectionInfo).returns(() => ({ serverInfo, source: 'connection', providerId: undefined, connectionProfile: undefined, extensionTimer: undefined, serviceTimer: undefined, intelliSenseTimer: undefined, connecting: undefined, ownerUri: undefined }));
 
 		dashboardService.setup(x => x.connectionManagementService).returns(() => singleConnectionService.object);
 

@@ -6,6 +6,7 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionPurpose } from 'sql/platform/connection/common/connectionManagement';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
 const msInH = 3.6e6;
@@ -87,7 +88,7 @@ export function parseNumAsTimeString(value: number, includeFraction: boolean = t
 	return tempVal > 0 && includeFraction ? rs + '.' + mss : rs;
 }
 
-export function generateUri(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook'): string {
+export function generateUri(connection: IConnectionProfile, purpose?: ConnectionPurpose): string {
 	let prefix = purpose ? uriPrefixes[purpose] : uriPrefixes.default;
 	let uri = generateUriWithPrefix(connection, prefix);
 

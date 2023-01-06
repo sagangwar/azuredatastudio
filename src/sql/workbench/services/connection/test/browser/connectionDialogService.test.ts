@@ -316,7 +316,7 @@ suite('ConnectionDialogService tests', () => {
 
 	test('handleOnConnect calls connectAndSaveProfile when called with profile', async () => {
 		let called = false;
-		mockConnectionManagementService.setup(x => x.connectAndSaveProfile(TypeMoq.It.isAny(), TypeMoq.It.isAnyString(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+		mockConnectionManagementService.setup(x => x.connectAndSaveProfile(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAnyString(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 			called = true;
 			return Promise.resolve(<IConnectionResult>{ connected: true, errorMessage: undefined, errorCode: undefined });
 		});
@@ -334,7 +334,7 @@ suite('ConnectionDialogService tests', () => {
 
 	test('handleOnConnect calls connectAndSaveProfile when called without profile', async () => {
 		let called = false;
-		mockConnectionManagementService.setup(x => x.connectAndSaveProfile(TypeMoq.It.isAny(), TypeMoq.It.isAnyString(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
+		mockConnectionManagementService.setup(x => x.connectAndSaveProfile(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAnyString(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 			called = true;
 			return Promise.resolve(<IConnectionResult>{ connected: true, errorMessage: undefined, errorCode: undefined });
 		});

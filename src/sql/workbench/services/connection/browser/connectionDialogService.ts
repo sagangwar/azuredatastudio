@@ -274,7 +274,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		};
 
 		try {
-			const connectionResult = await this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input);
+			const connectionResult = await this._connectionManagementService.connectAndSaveProfile(connection, 'connection', uri, options, params && params.input);
 			this._connecting = false;
 			if (connectionResult && connectionResult.connected) {
 				this._connectionDialog.close('ok');

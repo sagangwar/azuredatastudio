@@ -44,7 +44,7 @@ CommandsRegistry.registerCommand({
 				};
 				let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 				let uri = generateUri(profile, 'dashboard');
-				return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), uri, options);
+				return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), 'dashboard', uri, options);
 			}
 		}
 		return Promise.resolve(true);
