@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
 import { getCommonLaunchArgsAndCleanupOldLogFiles } from './utils';
-import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
+import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { SerializationFeature } from './features/serializationFeature';
 import { TelemetryFeature } from './features/telemetryFeature';
@@ -48,7 +48,7 @@ export class AzureMonitorServer {
 				vscode.commands.registerCommand('azuremonitor.loadCompletionExtension', (params: CompletionExtensionParams) => {
 					this.client.sendRequest(CompletionExtLoadRequest.type, params);
 				});
-				TelemetryReporter.sendTelemetryEvent('startup/LanguageClientStarted', {
+				Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
 					installationTime: String(installationComplete - installationStart),
 					processStartupTime: String(processEnd - processStart),
 					totalTime: String(processEnd - installationStart),
@@ -61,7 +61,7 @@ export class AzureMonitorServer {
 			await Promise.all([clientReadyPromise]);
 			return this.client;
 		} catch (e) {
-			TelemetryReporter.sendTelemetryEvent('ServiceInitializingFailed');
+			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
 			vscode.window.showErrorMessage(localize('failedToStartServiceErrorMsg', "Failed to start {0}", Constants.serviceName));
 			throw e;
 		}

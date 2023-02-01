@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { RequestType, NotificationType } from 'vscode-languageclient';
-import * as telemetry from '@microsoft/ads-extension-telemetry';
+import { ClientCapabilities as VSClientCapabilities, RequestType, NotificationType } from 'vscode-languageclient';
+import * as types from 'dataprotocol-client/lib/types';
 import * as azdata from 'azdata';
 
 /**
@@ -29,9 +29,17 @@ export namespace TelemetryNotification {
 export class TelemetryParams {
 	public params: {
 		eventName: string;
-		properties: telemetry.TelemetryEventProperties;
-		measures: telemetry.TelemetryEventMeasures;
+		properties: ITelemetryEventProperties;
+		measures: ITelemetryEventMeasures;
 	};
+}
+
+export interface ITelemetryEventProperties {
+	[key: string]: string;
+}
+
+export interface ITelemetryEventMeasures {
+	[key: string]: number;
 }
 
 

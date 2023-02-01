@@ -22,7 +22,6 @@ import { IconPathHelper } from './iconHelper';
 import * as nls from 'vscode-nls';
 import { INotebookConvertService } from './notebookConvert/notebookConvertService';
 import { registerTableDesignerCommands } from './tableDesigner/tableDesigner';
-import { TelemetryReporter } from './telemetry';
 
 const localize = nls.loadMessageBundle();
 
@@ -89,7 +88,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	registerTableDesignerCommands(appContext);
 
-	context.subscriptions.push(TelemetryReporter);
 	return createMssqlApi(appContext, server);
 }
 

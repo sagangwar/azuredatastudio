@@ -9,7 +9,7 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Disposable } from 'vscode';
 import * as azdata from 'azdata';
 
-import { TelemetryReporter } from './telemetry';
+import { Telemetry } from './telemetry';
 import * as serviceUtils from './serviceUtils';
 import {
 	TelemetryNotification,
@@ -33,7 +33,7 @@ export class TelemetryFeature implements StaticFeature {
 
 	initialize(): void {
 		this._client.onNotification(TelemetryNotification.type, e => {
-			TelemetryReporter.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
+			Telemetry.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
 		});
 	}
 }

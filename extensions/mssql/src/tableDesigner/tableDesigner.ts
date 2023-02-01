@@ -8,8 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { sqlProviderName } from '../constants';
 import { generateUuid } from 'vscode-languageclient/lib/utils/uuid';
-import { fillServerInfo } from '../telemetry';
-import * as telemetry from '@microsoft/ads-extension-telemetry';
+import { ITelemetryEventProperties, Telemetry } from '../telemetry';
 import * as nls from 'vscode-nls';
 import { getConfigPreloadDatabaseModel, setConfigPreloadDatabaseModel } from '../utils';
 const localize = nls.loadMessageBundle();
@@ -61,12 +60,11 @@ export function registerTableDesignerCommands(appContext: AppContext) {
 	}));
 }
 
-async function getTelemetryInfo(context: azdata.ObjectExplorerContext, tableType: string): Promise<telemetry.TelemetryEventProperties> {
+async function getTelemetryInfo(context: azdata.ObjectExplorerContext, tableType: string): Promise<ITelemetryEventProperties> {
 	const serverInfo = await azdata.connection.getServerInfo(context.connectionProfile.id);
-	const telemetryInfo: telemetry.TelemetryEventProperties = {
-		tableType
-	};
-	fillServerInfo(telemetryInfo, serverInfo);
+	const telemetryInfo: ITelemetryEventProperties = {};
+	Telemetry.fillServerInfo(telemetryInfo, serverInfo);
+	telemetryInfo['tableType'] = tableType;
 	return telemetryInfo;
 }
 

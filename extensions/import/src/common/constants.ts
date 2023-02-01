@@ -12,7 +12,6 @@ export const providerId = 'FlatFileImport';
 export const configLogDebugInfo = 'logDebugInfo';
 export const sqlConfigSectionName = 'sql';
 export const mssqlProvider = 'MSSQL';
-export const packageName = 'Microsoft.import';
 
 // allow-any-unicode-next-line
 export const summaryErrorSymbol = '✗ ';

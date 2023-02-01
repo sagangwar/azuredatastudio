@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 import * as path from 'path';
 import { EventAndListener } from 'eventemitter2';
 
-import { TelemetryReporter, LanguageClientErrorHandler } from './telemetry';
+import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import * as Constants from '../common/constants';
 import { TelemetryFeature, FlatFileImportFeature } from './features';
 import { promises as fs } from 'fs';
@@ -43,7 +43,7 @@ export class ServiceClient {
 				setTimeout(() => {
 					this.statusView.hide();
 				}, 1500);
-				TelemetryReporter.sendTelemetryEvent('startup/LanguageClientStarted', {
+				Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
 					installationTime: String(installationComplete - installationStart),
 					processStartupTime: String(processEnd - processStart),
 					totalTime: String(processEnd - installationStart),
@@ -57,7 +57,7 @@ export class ServiceClient {
 			return client;
 		}
 		catch (error) {
-			TelemetryReporter.sendTelemetryEvent('ServiceInitializingFailed');
+			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
 			vscode.window.showErrorMessage(localize('flatFileImport.serviceStartFailed', "Failed to start {0}: {1}", Constants.serviceName, error));
 			// Just resolve to avoid unhandled promise. We show the error to the user.
 			return undefined;

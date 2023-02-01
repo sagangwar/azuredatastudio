@@ -5,7 +5,7 @@
 
 import { SqlOpsDataClient } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature } from 'vscode-languageclient';
-import { TelemetryReporter } from '../telemetry';
+import { Telemetry } from '../telemetry';
 import * as contracts from './contracts';
 import * as Utils from '../utils';
 
@@ -19,7 +19,7 @@ export class TelemetryFeature implements StaticFeature {
 
 	initialize(): void {
 		this._client.onNotification(contracts.TelemetryNotification.type, e => {
-			TelemetryReporter.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
+			Telemetry.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
 		});
 	}
 }

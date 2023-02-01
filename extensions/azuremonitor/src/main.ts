@@ -19,7 +19,6 @@ import { AzureMonitorIconProvider } from './iconProvider';
 import { createAzureMonitorApi } from './azuremonitorApiFactory';
 import { AzureMonitorServer } from './azuremonitorServer';
 import { promises as fs } from 'fs';
-import { TelemetryReporter } from './telemetry';
 
 const localize = nls.loadMessageBundle();
 
@@ -55,7 +54,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	const server = new AzureMonitorServer();
 	context.subscriptions.push(server);
 	await server.start(appContext);
-	context.subscriptions.push(TelemetryReporter);
+
 	return createAzureMonitorApi(appContext);
 }
 
