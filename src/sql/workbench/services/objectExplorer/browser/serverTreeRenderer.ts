@@ -212,6 +212,7 @@ export class ServerTreeRenderer implements IRenderer {
 	private renderConnection(connection: ConnectionProfile, templateData: IConnectionTemplateData): void {
 
 		let isConnected = this._connectionManagementService.isConnected(undefined, connection);
+		let indexValue = this._connectionManagementService.getRecentConnectionIndexFromMap(connection);
 		if (!this._isCompact) {
 			if (isConnected) {
 				templateData.icon.classList.remove('disconnected');
@@ -225,7 +226,7 @@ export class ServerTreeRenderer implements IRenderer {
 		let iconPath = this.getIconPath(connection);
 		this.renderServerIcon(templateData.icon, iconPath, isConnected);
 
-		let label = connection.title;
+		let label = indexValue > 0 ? connection.title + ' (' + indexValue + ')' : connection.title;
 		templateData.label.textContent = label;
 		templateData.root.title = connection.serverInfo;
 		templateData.connectionProfile = connection;

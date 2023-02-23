@@ -340,6 +340,14 @@ export interface IConnectionManagementService {
 	 * @returns the new valid password that is entered, or undefined if cancelled or errored.
 	 */
 	openChangePasswordDialog(profile: IConnectionProfile): Promise<string | undefined>;
+
+	/**
+	 * Gets the recent connection index of a connection profile with a title,
+	 * this is used for distinguishing profiles with the same titles,
+	 * @param profile The connection profile that we want to get the index for.
+	 * @returns the index of the profile with the same title.
+	 */
+	getRecentConnectionIndexFromMap(profile: IConnectionProfile): number;
 }
 
 export enum RunQueryOnConnectionMode {

@@ -75,6 +75,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._notificationService);
 	private _uriToReconnectPromiseMap: { [uri: string]: Promise<IConnectionResult> } = {};
+	private _recentConnectionToTitleMap = new Map<ConnectionProfile, { title: string, index: number }>();
 
 	private _mementoContext: Memento;
 	private _mementoObj: MementoObject;
@@ -161,6 +162,45 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public providerRegistered(providerId: string): boolean {
 		return !!this._providers.get(providerId);
 	}
+
+	private removeRecentConnectionTitleFromMap(connectionProfile: interfaces.IConnectionProfile): void {
+		let titleToRemove = (connectionProfile as any).title
+		let indexOfRemovedProfile = -1;
+		for (let profile of this._recentConnectionToTitleMap.keys()) {
+			if (profile.matches(connectionProfile)) {
+				indexOfRemovedProfile = this._recentConnectionToTitleMap.get(connectionProfile as any).index
+				this._recentConnectionToTitleMap.delete(connectionProfile as any);
+				for (let profile of this._recentConnectionToTitleMap.keys()) {
+					let value = this._recentConnectionToTitleMap.get(profile);
+					if (value.title === titleToRemove && value.index > indexOfRemovedProfile) {
+						this._recentConnectionToTitleMap.set(profile, { title: value.title, index: (value.index - 1) });
+					}
+				}
+			}
+		}
+	}
+
+	private addRecentConnectionToMap(connectionProfile: interfaces.IConnectionProfile): void {
+		let titleToAdd = (connectionProfile as any).title;
+		let finalIndex = 0;
+		for (let values of this._recentConnectionToTitleMap.values()) {
+			if (values.title === titleToAdd && values.index >= finalIndex) {
+				finalIndex = values.index + 1;
+			}
+		}
+		this._recentConnectionToTitleMap.set((connectionProfile as any), { title: titleToAdd, index: finalIndex });
+	}
+
+	public getRecentConnectionIndexFromMap(connectionProfile: interfaces.IConnectionProfile): number {
+
+		for (let profile of this._recentConnectionToTitleMap.keys()) {
+			if (profile.matches(connectionProfile as any)) {
+				return this._recentConnectionToTitleMap.get(profile).index;
+			}
+		}
+		return -1;
+	}
+
 
 	// Event Emitters
 	public get onAddConnectionProfile(): Event<interfaces.IConnectionProfile> {
@@ -710,16 +750,25 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public getRecentConnections(providers?: string[]): ConnectionProfile[] {
-		return this._connectionStore.getRecentlyUsedConnections(providers);
+		let array = this._connectionStore.getRecentlyUsedConnections(providers);
+		if (this._recentConnectionToTitleMap.size === 0) {
+			for (let i = 0; i < array.length; i++) {
+				this.addRecentConnectionToMap(array[i]);
+			}
+		}
+
+		return array;
 	}
 
 
 	public clearRecentConnectionsList(): void {
+		this._recentConnectionToTitleMap.clear();
 		return this._connectionStore.clearRecentlyUsed();
 	}
 
 	public clearRecentConnection(connectionProfile: interfaces.IConnectionProfile): void {
 		this._connectionStore.removeRecentConnection(connectionProfile);
+		this.removeRecentConnectionTitleFromMap(connectionProfile);
 	}
 
 	public getActiveConnections(providers?: string[]): ConnectionProfile[] {
@@ -1136,6 +1185,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (newConnection && addToMru) {
 			this._connectionStore.addRecentConnection(newConnection)
 				.then(() => {
+					this.addRecentConnectionToMap(newConnection);
 					connectionManagementInfo.connectHandler(true);
 				}, err => {
 					connectionManagementInfo.connectHandler(false, err);
