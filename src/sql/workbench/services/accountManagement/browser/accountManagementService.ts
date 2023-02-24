@@ -194,7 +194,11 @@ export class AccountManagementService implements IAccountManagementService {
 	}
 
 	private isAccountResult(result: azdata.Account | azdata.PromptFailedResult): result is azdata.Account {
-		return typeof (<azdata.Account>result).displayInfo === 'object';
+		if (result) {
+			return typeof (<azdata.Account>result).displayInfo === 'object';
+		} else {
+			return false;
+		}
 	}
 
 	/**
